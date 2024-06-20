@@ -28,6 +28,7 @@ autom4te.cache
 /install-sh
 /missing
 /stamp-h1
+/dist/
 
 # https://www.gnu.org/software/libtool/
 
