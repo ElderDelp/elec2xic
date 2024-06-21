@@ -9,7 +9,9 @@
 //    The Electric CAD tool saves cells in .jelib format
 //      This is a parser that pulls a file or files into a form that can
 //        be manipulated.
-//  (Last Emacs Update:Thu Jun 20, 2024  9:22 pm by Gary Delp v-0.1.2)
+//  (Last Emacs Update:Fri Jun 21, 2024  5:13 pm by Gary Delp v-0.1.2)
+//
+// Fri Jun 21, 2024  5:13 pm by Gary Delp v-0.1.2:
 //
 // Thu Jun 20, 2024  4:38 pm by Gary Delp v-0.1.0:
 //      Header template expanded
@@ -27,16 +29,18 @@
 }
 %header
 %union {
-    long int   n;
-    cell_p     c;
-    char    *str;
-    pair_t  pair;
-    mod_t mod_st;
+    long int     n;
+    cell_p    cell;
+    char      *str;
+    pair_t    pair;
+    mod_st mod_str;
+    tree_p   treep;
 }
 %token NUM
 
 %% /* Grammar rules and actions follow.  */
 
+file: {headers} cells {
 
 
 

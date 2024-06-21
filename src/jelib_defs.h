@@ -6,7 +6,9 @@
 //    Licensed under the Apache License, Version 2.0
 // **************************************************************************
 // *Commentary:
-//  (Last Emacs Update:  Thu Jun 20, 2024  4:37 pm by Gary Delp v-0.1.0)
+//  (Last Emacs Update:  Fri Jun 21, 2024  5:13 pm by Gary Delp v-0.1.0)
+//
+// Fri Jun 21, 2024  5:13 pm by Gary Delp v-0.1.0:
 //
 // Thu Jun 20, 2024  4:37 pm by Gary Delp v-0.1.0:
 //      Initial data types
@@ -15,6 +17,8 @@
 #ifndef Def_INC_jelib_defs_h
 #define Def_INC_jelib_defs_h
 #include "config.h"
+
+# define nil ((void *) 0)
 
 /* For arbitrary lists, a cons cell */
 typedef cons_t {
@@ -30,6 +34,18 @@ typedef enum cell_type_t {
 typedef struct cell_t {
     char *name;
 } cell_t, *cell_p;
+
+/* balanced tree structure */
+typedef struct tree_t {
+    char *name;
+    struct tree_t *left, *right, *up;
+    void *el_p;                 // pointer to arbitrary element
+} tree_t *tree_p;
+
+/* JELIB Modifyier string */
+typedef struct mod_str_t {
+    char *modifyer;
+} mod_str_t, *mod_str_p;
 
 
 #endif /* Def__INC_jelib_defs_h */
