@@ -9,9 +9,9 @@
 //    The Electric CAD tool saves cells in .jelib format
 //      This is a parser that pulls a file or files into a form that can
 //        be manipulated.
-//  (Last Emacs Update:Fri Jun 21, 2024  5:13 pm by Gary Delp v-0.1.2)
+//  (Last Emacs Update:Fri Jun 21, 2024 10:22 pm by Gary Delp v-0.1.4)
 //
-// Fri Jun 21, 2024  5:13 pm by Gary Delp v-0.1.2:
+// Fri Jun 21, 2024 10:22 pm by Gary Delp v-0.1.4:
 //
 // Thu Jun 20, 2024  4:38 pm by Gary Delp v-0.1.0:
 //      Header template expanded
@@ -26,8 +26,18 @@
 #include "jelib_defs.h"
     int yylex (void);
     void yyerror (char const *);
+#define YYLTYPE YYLTYPE
+    typedef struct YYLTYPE {
+        int first_line;
+        int first_column;
+        int last_line;
+        int last_column;
+        char *filename;
+    } YYLTYPE;
 }
-%header
+
+%header jelib_gram.tab.h
+
 %union {
     long int     n;
     cell_p    cell;
@@ -36,6 +46,11 @@
     mod_st mod_str;
     tree_p   treep;
 }
+
+%code {
+    static void print_token (yytoken_kind_t token, YYSTYPE val);
+    static void trace_token (yytoken_kind_t token, YYLTYPE loc);
+ }
 %token NUM
 
 %% /* Grammar rules and actions follow.  */

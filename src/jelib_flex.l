@@ -6,10 +6,10 @@
 //    Licensed under the Apache License, Version 2.0
 // **************************************************************************
 // *Commentary:
-//  (Last Emacs Update:  Thu Jun 20, 2024  2:56 pm by Gary Delp v-0.1.0)
+//  (Last Emacs Update:  Fri Jun 21, 2024  9:13 pm by Gary Delp v-0.1.0)
 //
-// Thu Jun 20, 2024  2:56 pm by Gary Delp v-0.1.0:
-//      Header template expanded
+// Fri Jun 21, 2024  9:13 pm by Gary Delp v-0.1.0:
+//     still getting started
 // *start of: SRC/jelib_flex.l
 
 %top{
@@ -20,6 +20,7 @@
 #include "jelib_gram.tab.h"
  }
 
+%option noinput nounput noyywrap
 
 
 
@@ -27,4 +28,4 @@
 // mode: C++
 // End:
 
-/// end of: SRC/jelib_flex.l
+/// SRC/jelib_flex.l ends here.

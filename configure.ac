@@ -6,7 +6,9 @@
 #    Licensed under the Apache License, Version 2.0
 # -------------------------------------------------------------------------------
 # -Commentary:
-#  (Last Emacs Update:  Thu Jun 20, 2024 10:23 pm by Gary Delp v-0.1.16)
+#  (Last Emacs Update:  Fri Jun 21, 2024  8:44 pm by Gary Delp v-0.1.16)
+#
+# Fri Jun 21, 2024  8:44 pm by Gary Delp v-0.1.16:
 #
 # Thu Jun 20, 2024  8:20 pm by Gary Delp v-0.1.2:
 #      Initialize
@@ -17,7 +19,11 @@
 AC_PREREQ([2.71])
 
 #-O AC_INIT([package],[version],[bug-report-address])
-AC_INIT([elec2xic],[0.1],[elec2xic-bugs@graceandcharm.info],[dist/elec2xic-dist],[https://github.com/ElderDelp/elec2xic])
+AC_INIT([elec2xic],
+	[0.1],
+	[elec2xic-bugs@graceandcharm.info],
+	[dist/elec2xic-dist],
+	[https://github.com/ElderDelp/elec2xic])
 
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
