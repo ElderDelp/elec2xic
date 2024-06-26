@@ -11,7 +11,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jun 24, 2024  8:28 pm by Gary Delp v-0.1.2)
+#  (Last Emacs Update:  Tue Jun 25, 2024  9:13 pm by Gary Delp v-0.1.2)
+#
+# Tue Jun 25, 2024  9:13 pm by Gary Delp v-0.1.2:
 #
 #  Mon Jun 24, 2024  8:28 pm by Gary Delp v-0.1.0:
 # --------------------------------------------------------------------
@@ -27,8 +29,16 @@ class TestCell-Reader(unittest.TestCase):
     def test_cell-reader_class(self):
         """The class is an instance of itself.
         """
-
         self.assertIsInstance(Cell-Reader(), Cell-Reader)
+
+    def test_lines(self):
+        pass
+
+class TestElecLine(unittest.TestCase):
+    """ElecLine parses line by line."""
+
+    def test_
+
 
 # --------------------------------------------------------------------
 # test_cell-reader.py ends here.

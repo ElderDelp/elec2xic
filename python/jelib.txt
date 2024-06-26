@@ -1,0 +1,345 @@
+ The JELIB file has 3 parts: the header, cells, and trailer.
+
+The header has these elements:
+
+H	Header information; variable fields are allowed
+V	View information
+L	External library information
+R	External cell in the above external library
+F	External export in the above external cell
+T	Technology information; variable fields are allowed
+O	Tool information; variable fields are allowed
+
+The cells have these elements:
+
+C	Cell header; variable fields are allowed
+N	Primitive node information in the current cell; variable fields are allowed
+I	Cell instance information in the current cell; variable fields are allowed
+A	Arc information in the current cell; variable fields are allowed
+E	Export information in the current cell; variable fields are allowed
+X	Cell termination
+
+The trailer has this optional element:
+
+G	Group information
+
+Headers
+
+The first line in the JELIB file should be the "H" header line. The syntax is:
+
+H<name> | <version> [ | <variable> ]*
+<name>	the name of the library.
+<version>	the version of Electric that wrote the library.
+<variable>	a list of variables on the library (see Section 10-4-1).
+
+The name of the library is used in the JELIB file to identify references to this library. The actual name of this library is obtained from the file path of this JELIB file.
+
+Example:
+
+    Hlatches|8.01
+Declares that library "latches" was written from Electric version 8.01.
+
+Views
+
+All views used in the library must be declared.
+
+V<full name> | <name>
+<full name>	the full name of the view.
+<name>	the abbreviation name of the view.
+
+Example:
+
+    Vlayout|lay
+Declares view with abbreviation name "lay" and full name "layout".
+
+Tools
+
+There is no need to declare all tools in the header. The only reason for a tool declaration to exist is if the tool has project setting variables stored on it. If there are multiple tool lines, they are sorted by the tool name. The syntax is:
+
+O<name> [ | <variable> ]*
+<name>	the name of the tool.
+<variable>	a list of preferences on the tool (stored as variables, see Section 10-4-1).
+
+Example:
+
+    Ologeffort|GlobalFanout()D12.0
+Declares a project setting on the "Logical Effort" tool object. The
+"GlobalFanout" is set to the floating point value 12.
+
+
+After the header line, all external libraries cells and exports must be declared. This allows the file reader to quickly find all libraries that will be needed for the design, and to reconstruct any missing cells and exports. The cells are listed under their libraries. The exports are listed under their cells. If there are multiple external library lines, they are sorted by library name; where there are multiple external cells in a library, they are sorted by their name; and where there are multiple external exports in a cell, they are sorted by their name.
+
+The syntax of an external library reference is:
+
+L<name> | <path>
+<name>	the name of the external library.
+<path>	the full path to the disk file with the library.
+
+The name of the library is used in JELIB file to references to this library. The actual name of this library is obtained from the path.
+
+The syntax of an external cell reference is:
+
+R<name> | <lowX> | <highX> | <lowY> | <highY>
+<name>	the name of the external cell.
+<lowX>	reserved for the low X bounds of the cell contents.
+<highX>	reserved for the high X bounds of the cell contents.
+<lowY>	reserved for the low Y bounds of the cell contents.
+<highY>	reserved for the high Y bounds of the cell contents.
+
+The syntax of an external export reference is:
+
+F<name> | <centerX> | <centerY>
+<name>	the name of the external export.
+<centerX>	reserved for the X coordinate of the center of export polygon.
+<centerY>	reserved for the Y coordinate of the center of export polygon.
+
+Examples:
+
+    Lspiceparts|/home/strubin/electric/spiceparts.jelib
+    Rgate;1{sch}|-4|4|0|2
+    Fout|0|2
+Declares that an external library called "spiceparts" will be used by
+    the current library, and that it can be found at
+    "/home/strubin/electric/spiceparts.jelib". In that library is a
+    cell called "gate;1{sch}" whose contents run from -4 to 4 in X and
+    0 to 2 in Y. In that cell is an export called "out" with center at
+    (0,2).
+
+
+All technologies used in the library must be in the header. The other reason for a technology declaration to exist is if the technology has preferences stored on it. If there are multiple technology lines, they are sorted by technology name. The syntax is:
+
+T<name> [ | <variable> ]*
+<name>	the name of the technology.
+<variable>	a list of preferences on the technology (stored as variables, see Section 10-4-1).
+
+Examples:
+
+    Tmocmos
+Declares that there should be a technology called "mocmos".
+
+    Tmocmos|ScaleFORmocmos()D200
+Declares the technology "mocmos" and also creates a project setting on
+that technology object called "ScaleFORmocmos" which is a
+double-precision value equal to 200.
+
+After the header information, each cell is described. A cell consists of a cell declaration ("C") followed by a number of node ("N"), instance ("I"), arc ("A"), and export ("E") lines. The cell is terminated with a cell-end line ("X"). Inside of a cell, all nodes come first and are sorted by the node name; arcs come next and are sorted by the arc name; finally come exports, sorted by the export name. Also, when there are multiple cells, their appearance in the file is sorted by the cell name. The syntax is:
+
+C<name> | <group> | <tech> | <creation> | <revision> | <flags> [ | <variable> ]*
+<name>	the name of the cell in the form "NAME;VERSION{VIEW}".
+<group>	the name of this cell's group (if different than expected). This field may be omitted in earlier-format libraries.
+<tech>	the technology of the cell.
+<creation>	the creation date of the cell (Java format).
+<revision>	the revision date of the cell (Java format).
+<flags>	flags for the cell.
+<variable>	a list of variables on the cell (see Section 10-4-1).
+
+The Java format for dates (the creation and revision dates) is in
+milliseconds since the "epoch" (Midnight on January 1, 1970, GMT). 
+
+The <flags> field consists of any of the following letters, (sorted alphabetically):
+
+"C" if this cell is part of a cell-library.
+"E" if the cell should be created "expanded".
+"I" if instances in the cell are locked.
+"L" if everything in the cell is locked.
+"T" if this cell is part of a technology-library.
+
+Inside of a cell definition, node instances are declared with the "N" and "I" lines. "N" is for primitive nodes and "I" is for cell instances. All nodes are sorted by the node name. The syntax is:
+
+N<type> | <name> | <nameTD> | <x> | <y> | <width> | <height> | <orientation> | <flags> [ | <variable> ]*
+I<type> | <name> | <nameTD> | <x> | <y> | <orientation> | <flags> | <TD> [ | <variable> ]*
+<type>	the type of the node instance. For primitive node instances, this has the form: [<technology>:]<primitive-node>. If <technology> is omitted, the technology of the cell is assumed. For cell instances, it has the form: [<library>:]<cell>;<version>{<view>}. If <library> is omitted, the library defined by this JELIB file is assumed.
+<name>	the name of the node instance.
+<nameTD>	a text descriptor for the name (when displayed).
+<x>	the X coordinate of the anchor point of the node instance.
+<y>	the Y coordinate of the anchor point of the node instance.
+<width>	the difference between width of the primitive node and the standard width of this primitive
+<height>	the difference between height of the primitive node and the standard height of this primitive
+<orientation>	the orientation of the node (see below).
+<flags>	flags for the node instance (see below).
+<TD>	a text descriptor for the cell instance name (does not apply to primitives).
+<variable>	a list of variables on the node instance (see Section 10-4-1).
+
+The <orientation> field is any of the following letters, followed by an optional numeric part:
+
+"X" if the node instance is X-mirrored (mirrored about Y axis).
+"Y" if the node instance is Y-mirrored (mirrored about X axis).
+"R" each letter rotates the node instance at 90 degrees counter-clockwise.
+Num Any digits at the end are additional rotation in tenths of a degree.
+
+The <flags> field is any of the following letters, sorted alphabetically, followed by a numeric part:
+
+"A" if the node instance is hard-to-select.
+"L" if the node instance is locked.
+"V" if the node instance is visible only inside the cell.
+Num Any digits at the end are the technology-specific bits.
+=======================
+Inside of a cell definition, arc instances are declared with the "A"
+line. All arcs are sorted by the arc name. The syntax is: 
+
+A<type> | <name> | <nameTD> | <width> | <flags> | <headNode> |
+<headPortID> | <headX> | <headY> | <tailNode> | <tailPortID> | <tailX>
+| <tailY> [ | <variable> ]* 
+<type>	the type of the arc instance. It has the form:
+[<technology>:]<arc>. If technology is omitted, the technology of the
+cell is assumed. 
+<name>	the name of the arc instance.
+<nameTD>	a text descriptor for the name (when displayed).
+<width>	the difference between width of the arc instance and standard width of this arc's prototype.
+<flags>	flags for the arc instance (see below).
+<headNode>	the name of the node at the head of the arc instance.
+<headPortID>	the ID of the port on the head node (may be blank if there are no choices).
+<headX>	the X coordinate of the head of the arc instance.
+<headY>	the Y coordinate of the head of the arc instance.
+<tailNode>	the name of the node at the tail of the arc instance.
+<tailPortID>	the ID of the port on the tail node (may be blank if there are no choices).
+<tailX>	the X coordinate of the tail of the arc instance.
+<tailY>	the Y coordinate of the tail of the arc instance.
+<variable>	a list of variables on the arc instance (see Section 10-4-1).
+
+The <flags> field consists of any of the following letters, sorted alphabetically, with the numeric part at the end:
+
+"A" if the arc instance is hard-to-select.
+"B" if the arc instance has an arrow line on the body (use "X" and "Y" for arrow heads).
+"F" if the arc instance is NOT fixed-angle (fixed-angle is more common).
+"G" if the arc instance has its head connection negated.
+"I" if the arc instance has its head NOT extended.
+"J" if the arc instance has its tail NOT extended.
+"N" if the arc instance has its tail connection negated.
+"R" if the arc instance is rigid.
+"S" if the arc instance is slidable.
+"X" if the arc instance has an arrow on the head (use "B" for an arrow body).
+"Y" if the arc instance has an arrow on the tail (use "B" for an arrow body).
+Num Any digits at the end are the angle of the arc (in tenths of a
+degree).
+=================
+
+Inside of a cell definition, exports are declared with the "E"
+line. All exports are sorted by their name. The syntax is: 
+
+E<portID> | <name> | <TD> | <originalNode> | <originalPort> | <flags> [ | <variable> ]*
+<portID>	the export ID of the export.
+<name>	the name of the export. If empty, the <portID> field is used.
+<TD>	the text descriptor for writing the port (described later).
+<originalNode>	the name of the node instance in this cell that the export resides on.
+<originalPortID>	the ID of the port on the exported node instance (may be blank if there are no choices).
+<flags>	flags for the export (see below).
+<variable>	a list of variables on the export (see Section 10-4-1).
+
+The <flags> field has the format:
+    <characteristics> [ /A ] [ /B ]
+Where <characteristics> is the nature of the export. Choose from the following:
+"U" unknown.	"C2" clock phase 2.
+"I" input.	"C3" clock phase 3.
+"O" output.	"C4" clock phase 4.
+"B" bi-directional.	"C5" clock phase 5.
+"P" power.	"C6" clock phase 6.
+"G" ground.	"RO" reference output.
+"C" clock.	"RI" reference input.
+"C1" clock phase 1.   	"RB" reference base.
+/A indicates that the export is always drawn
+/B indicates that the export is body-only (no equivalent on the icon)
+
+Example:
+
+    Es[18]||conn@14|a|D5G2;|I/B
+Exports port "a" of node instance "conn@14" and calls it "s[18]". The
+text of the export is attached at the center of the port ("D5") and is
+2 units high ("G2;"). It is of type input, and only appears in the
+contents (not the icon).
+==========================
+Variables may be attached to any object in the Electric database. They appear at the end of many of the lines in the file. When more than 1 variable is listed on an object, they are sorted by the variable name. The syntax is:
+
+<name> ( <TD> ) <type> <value>
+<name>	the name of the variable.
+<TD>	the text descriptor (when the variable is visible).
+<type>	the type of data attached.
+<value>	the data. If it starts with "[", it is an array of the form [ , , ... ]
+
+<name> and <value> fields may be enclosed in quotation marks if the contain special characters (square brackets, vertical bar, double-quote, backslash, or newline). Backslash character can be used inside enclosed strings to denote special characters (such as backslash or quote).
+
+The <type> field can be one of these:
+"B" Boolean ("T" or "F")
+"C" Cell (of the form <library> : <cell>)
+"D" Double
+"E" Export (of the form <library> : <cell> : <exportID>)
+"F" Float
+"G" Long
+"H" Short
+"I" Integer
+"L" Library name
+"O" Tool name
+"P" Primitive Node prototype (of the form <technology> : <node name>)
+"R" Arc prototype (of the form <technology> : <arc name>)
+"S" String
+"T" Technology name
+"V" Point2D (of the form <x> / <y>)
+"Y" Byte (0-255)
+
+Examples:
+
+    ART_message(D5G8;)StxArray4x4B
+Adds a variable called "ART_message" with the string
+"txArray4x4B". The text descriptor indicates centered text ("D5") that
+is 8 units tall ("G8;"). 
+
+    ART_degrees()F[0.0,3.1415927]
+Adds a variable called "ART_degrees" with an array of 2 floating point
+values: 0.0 and 3.1415927. 
+
+    EXPORTS()E[ccc:gate;1{sch}:a,"ccc:hate;1{sch}:b[0:4]"]
+Adds a variable called "EXPORTS" with an array of 2 exports: export
+"a" of cell "ccc:gate{sch}" and export "b[0:4]" from the cell
+"ccc:hate{sch}". 
+
+    ATTR_z0(D5G0.5;NPY1;)I50
+Adds an attribute called "z0" with the integer value 50. It is
+displayed anchored at the center ("D5"), 0.5 unit tall ("G0.5;"),
+written as "name=value" ("N"), is a parameter ("P"), and is offset by
+1 in Y ("Y1;").
+
+===============================================
+
+Text descriptors appear in every Variable, and also in other places (cell instances and exports). All text descriptors have an anchor factor ("D0" through "D9"). If the anchor starts with a lower-case "d", the text is hidden (but the descriptor information is remembered). Here are the fields of a text descriptor:
+
+A <size> ;	Text is absolute size (in points).
+B	Text is bold.
+C <color> ;	Text is drawn in the color index given.
+D0 / d0	Text is anchored at its center, limited to the size of its owner.
+D1 / d1	Text is anchored at its upper-right.
+D2 / d2	Text is anchored at its top.
+D3 / d3	Text is anchored at its upper-left.
+D4 / d4	Text is anchored at its right.
+D5 / d5	Text is anchored at its center.
+D6 / d6	Text is anchored at its left.
+D7 / d7	Text is anchored at its lower-right.
+D8 / d8	Text is anchored at its bottom.
+D9 / d9	Text is anchored at its lower-left.
+F <font> ;	Text is shown in the named font.
+G <size> ;	Text has relative size (in grid units).
+H	Variable is inheritable (only for variables on Cells or Exports).
+I	Text is italic.
+L	Text is underlined.
+N	Variable is written in the form "NAME=VALUE".
+OJ	Text is Java code.
+OL	Text is Spice code.
+OT	Text is TCL code.
+P	Variable is a parameter.
+R	Text is rotated 90 degrees.
+RR	Text is rotated 180 degrees.
+RRR	Text is rotated 270 degrees.
+T	Text is interior (seen only when inside the cell).
+UR	Value is in Resistance units.
+UC	Value is in Capacitance units.
+UI	Value is in Inductance units.
+UA	Value is in Current units.
+UV	Value is in Voltage units.
+UD	Value is in Distance units.
+UT	Value is in Time units.
+X <xoff> ;	Text is offset in X from object center.
+Y <yoff> ;	Text is offset in Y from object center.
+
+Example:
+
+    D4G8;
+The text is anchored on the left ("D4") and is 8 units tall ("G8;"). 
