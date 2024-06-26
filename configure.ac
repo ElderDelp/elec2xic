@@ -6,12 +6,10 @@
 #    Licensed under the Apache License, Version 2.0
 # -------------------------------------------------------------------------------
 # -Commentary:
-#  (Last Emacs Update:  Fri Jun 21, 2024  8:44 pm by Gary Delp v-0.1.16)
+#  (Last Emacs Update:  Wed Jun 26, 2024  3:24 pm by Gary Delp v-0.1.18)
 #
-# Fri Jun 21, 2024  8:44 pm by Gary Delp v-0.1.16:
-#
-# Thu Jun 20, 2024  8:20 pm by Gary Delp v-0.1.2:
-#      Initialize
+# Wed Jun 26, 2024  3:24 pm by Gary Delp v-0.1.18:
+#     Modified YACC test to remove bison flag -y
 # -start of: SRC/configure.ac
 #-O outline from  https://www.gnu.org/savannah-checkouts/gnu/autoconf/
 #   manual/autoconf-2.72/html_node/Autoconf-Input-Layout.html
@@ -28,17 +26,23 @@ AC_INIT([elec2xic],
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
 #-O information on the package
-AC_CONFIG_SRCDIR ([jelib_gram.y])
+# Make sure that this specific file exists in the src directory
+#AC_CONFIG_SRCDIR([jelib_gram.y])
 
 #-O checks for programs
 AC_PROG_CC
-AC_PROG_LEX([yywrap])
+AC_PROG_LEX([noyywrap])
 if test "x$LEX" != xflex; then
    LEX="$SHELL $missing_dir/missing flex"
    AC_SUBST([LEX_OUTPUT_ROOT], [lex.yy])
    AC_SUBST([LEXLIB], [''])
 fi
 AC_PROG_YACC
+if test "x$YACC" == "xbison -y"; then
+   YACC="bison"
+   echo " tested for bison... using without the -y flag"
+fi
+   
 AC_PROG_INSTALL
 #-O checks for libraries
 #-O checks for header files
