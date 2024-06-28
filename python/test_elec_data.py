@@ -12,9 +12,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Jun 27, 2024  5:25 pm by Gary Delp v-0.1.2)
+#  (Last Emacs Update:  Thu Jun 27, 2024 10:29 pm by Gary Delp v-0.1.16)
 #
-#  Thu Jun 27, 2024  5:18 pm by Gary Delp v-0.1.0:
+# Thu Jun 27, 2024 10:29 pm by Gary Delp v-0.1.16:
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: PYTHON/test_elec_data.py
@@ -29,7 +29,13 @@ class TestElecData(unittest.TestCase):
         """The class is an instance of itself.
         """
 
-        self.assertIsInstance(ElecBase(), ElecBase)
+        check = ElecBase("", "")
+        print(f'{type(check)} {check=}')
+        self.assertIsInstance(check, cls=ElecBase)
 
+
+# Local Variables:
+# compile-command: "python -m unittest"
+# End:
 # --------------------------------------------------------------------
 # test_elec_data.py ends here.

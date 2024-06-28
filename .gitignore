@@ -58,3 +58,7 @@ Makefile
 *~
 .*#
 .,*
+
+# python
+#
+__pycache__/

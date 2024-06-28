@@ -10,9 +10,9 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Jun 27, 2024  5:21 pm by Gary Delp v-0.1.4)
+#  (Last Emacs Update:  Thu Jun 27, 2024 10:12 pm by Gary Delp v-0.1.6)
 #
-# Thu Jun 27, 2024  5:21 pm by Gary Delp v-0.1.4:
+# Thu Jun 27, 2024  9:34 pm by Gary Delp v-0.1.4:
 #     got much of the baseclass written
 # Wed Jun 26, 2024  9:06 pm by Gary Delp v-0.1.2:
 # --------------------------------------------------------------------
@@ -56,10 +56,10 @@ class ElecBase():
     def register_element(
             cls, obj:Self, library:str ="",
             name:str = "", dtype:str = "", version:str = ""):
-        # the_library: Tlibrary_dict = cls.dummy
-        # the_name: Tname_dict = cls.dummy
-        # the_dtype: Tdtype_dict = cls.dummy
-        # the_end: Self
+        """ the_library: Tlibrary_dict = cls.dummy
+         the_name: Tname_dict = cls.dummy
+         the_dtype: Tdtype_dict = cls.dummy
+         the_end: Self"""
         the_version: Self = cls.dummy
         if library in cls.name_dict:
             the_library = cls.name_dict[library]
@@ -95,8 +95,6 @@ class ElecBase():
             'version': (version, the_version)
             }
 
-
-
     @staticmethod
     def str_includes(general:str, specific:str) -> bool:
         return re.match(general, specific) is not None
@@ -104,6 +102,7 @@ class ElecBase():
     @classmethod
     def lookup_symbol(
             cls, library:str, name:str, dtype:str, version:str):
+        """Return the matching elements."""
         ret= []
         for a_library in cls.name_dict:
             if cls.str_includes(library, a_library):
@@ -125,6 +124,7 @@ class ElecBase():
 
     @classmethod
     def cls_init(cls) -> None:
+        """Allocate the class constant instance: ElecNone."""
         if cls.init_needed:
             cls._ElecNone = cls("", "ElecNone", "")
             cls.register_element(
@@ -143,8 +143,8 @@ class ElecBase():
 
     def __str__(self) -> str:
         ret = '<<' + type(self).__name__
-        for (k, v) in self.name_db:
-            ret += f' {k} {v[0]}'
+        for (k, val) in self.name_db:
+            ret += f' {k} {val[0]}'
         ret += '>>'
         return ret
 
