@@ -10,9 +10,9 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Jun 27, 2024 10:12 pm by Gary Delp v-0.1.6)
+#  (Last Emacs Update:  Fri Jun 28, 2024 10:04 pm by Gary Delp v-0.1.6)
 #
-# Thu Jun 27, 2024  9:34 pm by Gary Delp v-0.1.4:
+# Fri Jun 28, 2024 10:04 pm by Gary Delp v-0.1.6:
 #     got much of the baseclass written
 # Wed Jun 26, 2024  9:06 pm by Gary Delp v-0.1.2:
 # --------------------------------------------------------------------
@@ -26,6 +26,7 @@ import re
 def gsd_init_class(klass):
     """Decorator to intialize class when defined."""
     klass.cls_init()
+    return klass
 
 @gsd_init_class
 class ElecBase():
@@ -51,6 +52,17 @@ class ElecBase():
              {"":            # version:
               dummy          # Value
               }}}}
+
+    @classmethod
+    def reset_name_dict(cls):
+        """Clear the name_dict."""
+        name_dict = {
+            "": {               # library:
+                "":             # name:
+                {"":            # dtype:
+                 {"":           # version:
+                  cls.dummy         # Value
+                  }}}}
 
     @classmethod
     def register_element(
@@ -135,6 +147,11 @@ class ElecBase():
     def ElecNone(cls) -> Self:
         return cls._ElecNone
 
+    @property
+    @classmethod
+    def master_name_dist(cls) -> Tlibrary_dict:
+        return cls.name_dict
+
     def __init__(self, library:str, name:str, version:str = "") -> None:
         self.name_db: dict[str, tuple] = self.dummy
         self.collide: set[Self] = set()
@@ -143,8 +160,11 @@ class ElecBase():
 
     def __str__(self) -> str:
         ret = '<<' + type(self).__name__
-        for (k, val) in self.name_db:
-            ret += f' {k} {val[0]}'
+        sep = ''
+        for key in self.name_db:
+            val = self.name_db[key]
+            ret += f'{sep} {key}={val[0]}'
+            sep = ','
         ret += '>>'
         return ret
 
