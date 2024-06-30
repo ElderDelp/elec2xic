@@ -10,7 +10,9 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Fri Jun 28, 2024 10:04 pm by Gary Delp v-0.1.6)
+#  (Last Emacs Update:  Sat Jun 29, 2024 10:58 pm by Gary Delp v-0.1.8)
+#
+# Sat Jun 29, 2024 10:58 pm by Gary Delp v-0.1.8:
 #
 # Fri Jun 28, 2024 10:04 pm by Gary Delp v-0.1.6:
 #     got much of the baseclass written
@@ -82,7 +84,7 @@ class ElecBase():
                     if version in the_dtype:
                         the_version = the_dtype[version]
                         if the_version is not obj:
-                            if isinstance(the_version, Self):
+                            if isinstance(the_version, type(cls._ElecNone)):
                                 the_version.collide.add(obj)
                             else:
                                 the_dtype[version] = obj
@@ -114,11 +116,11 @@ class ElecBase():
     @classmethod
     def lookup_symbol(
             cls, library:str, name:str, dtype:str, version:str):
-        """Return the matching elements."""
+        """Return a list of the matching elements."""
         ret= []
         for a_library in cls.name_dict:
             if cls.str_includes(library, a_library):
-                the_library = cls.name_dict[library]
+                the_library = cls.name_dict[a_library]
                 for a_name in the_library:
                     if cls.str_includes(name, a_name):
                         the_name = the_library[a_name]
@@ -128,7 +130,7 @@ class ElecBase():
                                 for a_version in the_dtype:
                                     if cls.str_includes(version, a_version):
                                         the_version = the_dtype[a_version]
-                                        if isinstance(the_version, Self):
+                                        if isinstance(the_version, type(cls.ElecNone)):
                                             ret.append(the_version)
                                             for others in the_version.collide:
                                                 ret.append(others)
@@ -141,6 +143,7 @@ class ElecBase():
             cls._ElecNone = cls("", "ElecNone", "")
             cls.register_element(
                 cls._ElecNone,'ElecNone', type(cls).__name__,"")
+            cls.reset_name_dict()
 
     @property
     @classmethod
