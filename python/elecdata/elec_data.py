@@ -10,7 +10,9 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sat Jun 29, 2024 10:58 pm by Gary Delp v-0.1.8)
+#  (Last Emacs Update:  Sun Jun 30, 2024  8:12 pm by Gary Delp v-0.1.10)
+#
+# Sun Jun 30, 2024  8:12 pm by Gary Delp v-0.1.10:
 #
 # Sat Jun 29, 2024 10:58 pm by Gary Delp v-0.1.8:
 #
@@ -22,7 +24,7 @@ Classes for holding the various electric objects and their properties,
 # Here is the start of: PYTHON/elec_data.py
 # from functools import wraps
 # from dataclasses import dataclass
-from typing import Self, Any
+from typing import Self, Any, Final
 import re
 
 def gsd_init_class(klass):
@@ -37,7 +39,7 @@ class ElecBase():
     and version as keys.
     """
     dummy: Any = None
-    _ElecNone: Self = dummy
+    ElecNone: Self = dummy
     init_needed: bool = True
 
     #some useful types
@@ -47,7 +49,7 @@ class ElecBase():
     Tlibrary_dict = dict[str, Tname_dict]
 
     # the symbol db
-    name_dict: Tlibrary_dict = {
+    _name_dict: Tlibrary_dict = {
         "": {                # library:
             "":              # name:
             {"":             # dtype:
@@ -58,7 +60,7 @@ class ElecBase():
     @classmethod
     def reset_name_dict(cls):
         """Clear the name_dict."""
-        name_dict = {
+        cls.name_dict = {
             "": {               # library:
                 "":             # name:
                 {"":            # dtype:
@@ -145,15 +147,17 @@ class ElecBase():
                 cls._ElecNone,'ElecNone', type(cls).__name__,"")
             cls.reset_name_dict()
 
-    @property
-    @classmethod
-    def ElecNone(cls) -> Self:
-        return cls._ElecNone
+    # as shared in https://docs.python.org/3.11/library/functions.html#classmethod
+    #  Class methods can no longer wrap other descriptors such as property().
+    # @property
+    # @classmethod
+    # def ElecNone(cls) -> Self:
+    #     return cls._ElecNone
 
-    @property
-    @classmethod
-    def master_name_dist(cls) -> Tlibrary_dict:
-        return cls.name_dict
+    # @property
+    # @classmethod
+    # def master_name_dict(cls) -> Tlibrary_dict:
+    #     return cls.name_dict
 
     def __init__(self, library:str, name:str, version:str = "") -> None:
         self.name_db: dict[str, tuple] = self.dummy

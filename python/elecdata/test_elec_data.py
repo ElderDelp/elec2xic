@@ -12,7 +12,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sat Jun 29, 2024 10:47 pm by Gary Delp v-0.1.22)
+#  (Last Emacs Update:  Sun Jun 30, 2024  8:12 pm by Gary Delp v-0.1.24)
+#
+# Sun Jun 30, 2024  8:12 pm by Gary Delp v-0.1.24:
 #
 # Sat Jun 29, 2024 10:47 pm by Gary Delp v-0.1.22:
 #
@@ -38,7 +40,13 @@ class TestElecBase(unittest.TestCase):
             ["conductors", 'm4wire', ''],
             ["inductors", 'm4wire', '1'],
             ["inductors", 'm4wire', '1'],
-            ["conductors", 'm4wire', '1']]
+            ["conductors", 'm4wire', '1']
+        ],
+        'elec_base_str': [
+            ["lib1", 'bert', 'v1'],
+            ["lib1", 'ernie', 'v1'],
+            ["lib1", 'cookiemonster', 'v1']
+        ]
         }
 
     wild_card = ['.*' for _ in range(4)]
@@ -65,15 +73,48 @@ class TestElecBase(unittest.TestCase):
 
     def test_elec_base_str(self):
         """Test the _str_ function."""
-        check = ElecBase("lib1", "bert", "v1")
-        should = "<<ElecBase library=lib1, name=bert, "
-        should += "dtype=ElecBase, version=v1>>"
-        self.assertEqual(f'{check}', should)
+        sep = "', '"
+        tlist = self._elec_test_data['elec_base_str']
+        objs = []
+        for (i, names) in enumerate(tlist):
+            check = ElecBase(*names)
+            objs.append(check)
+            should = f"<<ElecBase library={names[0]}, name={names[1]}, "
+            should += f"dtype=ElecBase, version={names[2]}>>"
+            self.assertEqual(
+                f'{str(check)}',
+                should,
+                f"Loop {i}: '{sep.join(names)}'")
+
 
     def test_symbols_1(self):
         """try the lookups 1."""
+        sep = "', '"
+        tlist = self._elec_test_data['elec_base_str']
         lookup = ElecBase.lookup_symbol(*self.wild_card)
         self.assertEqual(0, len(lookup))
+        for (i, names) in enumerate(tlist):
+            check = ElecBase(*names)
+            lib_dict = check._name_dict[names[0]]
+            self.assertEqual(
+                lib_dict,
+                check.name_db['library'][1],
+                f"Loop {i}: '{sep.join(names)}'")
+            name_dict = lib_dict[names[1]]
+            self.assertEqual(
+                name_dict,
+                check.name_db['name'][1],
+                f"Loop {i}: '{sep.join(names)}'")
+            name_dict = lib_dict[names[1]]
+            self.assertEqual(
+                name_dict,
+                check.name_db['name'][1],
+                f"Loop {i}: '{sep.join(names)}'")
+            name_dict = lib_dict[names[1]]
+            self.assertEqual(
+                name_dict,
+                check.name_db['name'][1],
+                f"Loop {i}: '{sep.join(names)}'")
 
     def test_symbols_2(self):
         """try the lookups 2."""
