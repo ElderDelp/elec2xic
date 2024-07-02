@@ -10,7 +10,9 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jun 30, 2024  8:12 pm by Gary Delp v-0.1.10)
+#  (Last Emacs Update:  Mon Jul  1, 2024  8:54 pm by Gary Delp v-0.1.12)
+#
+# Mon Jul  1, 2024  8:19 pm by Gary Delp v-0.1.10:
 #
 # Sun Jun 30, 2024  8:12 pm by Gary Delp v-0.1.10:
 #
@@ -24,7 +26,8 @@ Classes for holding the various electric objects and their properties,
 # Here is the start of: PYTHON/elec_data.py
 # from functools import wraps
 # from dataclasses import dataclass
-from typing import Self, Any, Final
+import pdb
+from typing import Self, Any
 import re
 
 def gsd_init_class(klass):
@@ -49,24 +52,24 @@ class ElecBase():
     Tlibrary_dict = dict[str, Tname_dict]
 
     # the symbol db
-    _name_dict: Tlibrary_dict = {
-        "": {                # library:
-            "":              # name:
-            {"":             # dtype:
-             {"":            # version:
-              dummy          # Value
-              }}}}
+    _name_dict: Tlibrary_dict = {}
+        # "": {                # library:
+        #     "":              # name:
+        #     {"":             # dtype:
+        #      {"":            # version:
+        #       dummy          # Value
+        #       }}}}
 
     @classmethod
     def reset_name_dict(cls):
         """Clear the name_dict."""
-        cls.name_dict = {
-            "": {               # library:
-                "":             # name:
-                {"":            # dtype:
-                 {"":           # version:
-                  cls.dummy         # Value
-                  }}}}
+        cls._name_dict = {}
+            # "": {               # library:
+            #     "":             # name:
+            #     {"":            # dtype:
+            #      {"":           # version:
+            #       cls.dummy     # Value
+            #       }}}}
 
     @classmethod
     def register_element(
@@ -77,8 +80,8 @@ class ElecBase():
          the_dtype: Tdtype_dict = cls.dummy
          the_end: Self"""
         the_version: Self = cls.dummy
-        if library in cls.name_dict:
-            the_library = cls.name_dict[library]
+        if library in cls._name_dict:
+            the_library = cls._name_dict[library]
             if name in the_library:
                 the_name = the_library[name]
                 if dtype in the_name:
@@ -103,7 +106,7 @@ class ElecBase():
             the_dtype =  {version: obj}
             the_name = {dtype: the_dtype}
             the_library = {name: the_name}
-            cls.name_dict[library] = the_library
+            cls._name_dict[library] = the_library
         obj.name_db = {
             'library': (library, the_library),
             'name': (name, the_name),
@@ -120,9 +123,9 @@ class ElecBase():
             cls, library:str, name:str, dtype:str, version:str):
         """Return a list of the matching elements."""
         ret= []
-        for a_library in cls.name_dict:
+        for a_library in cls._name_dict:
             if cls.str_includes(library, a_library):
-                the_library = cls.name_dict[a_library]
+                the_library = cls._name_dict[a_library]
                 for a_name in the_library:
                     if cls.str_includes(name, a_name):
                         the_name = the_library[a_name]
@@ -132,7 +135,7 @@ class ElecBase():
                                 for a_version in the_dtype:
                                     if cls.str_includes(version, a_version):
                                         the_version = the_dtype[a_version]
-                                        if isinstance(the_version, type(cls.ElecNone)):
+                                        if isinstance(the_version, cls.ElecNone.__class__):
                                             ret.append(the_version)
                                             for others in the_version.collide:
                                                 ret.append(others)
@@ -162,6 +165,7 @@ class ElecBase():
     def __init__(self, library:str, name:str, version:str = "") -> None:
         self.name_db: dict[str, tuple] = self.dummy
         self.collide: set[Self] = set()
+        # pdb.set_trace()
         self.register_element(
             self, library, name, type(self).__name__, version)
 
