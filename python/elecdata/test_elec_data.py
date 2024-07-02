@@ -12,7 +12,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul  1, 2024  9:00 pm by Gary Delp v-0.1.24)
+#  (Last Emacs Update:  Tue Jul  2, 2024  5:45 pm by Gary Delp v-0.1.26)
+#
+# Tue Jul  2, 2024  5:45 pm by Gary Delp v-0.1.26:
 #
 # Mon Jul  1, 2024  9:00 pm by Gary Delp v-0.1.24:
 #
@@ -108,15 +110,15 @@ class TestElecBase(unittest.TestCase):
                 name_dict,
                 check.name_db['name'][1],
                 f"Loop {i}: '{sep.join(names)}'")
-            name_dict = lib_dict[names[1]]
+            dtype_dict = name_dict[check.__class__.__name__]
             self.assertEqual(
-                name_dict,
-                check.name_db['name'][1],
+                dtype_dict,
+                check.name_db['dtype'][1],
                 f"Loop {i}: '{sep.join(names)}'")
-            name_dict = lib_dict[names[1]]
+            version_dict = dtype_dict[names[2]]
             self.assertEqual(
-                name_dict,
-                check.name_db['name'][1],
+                version_dict,
+                check.name_db['version'][1],
                 f"Loop {i}: '{sep.join(names)}'")
 
     def test_symbols_2(self):

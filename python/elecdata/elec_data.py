@@ -10,7 +10,9 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul  1, 2024  8:54 pm by Gary Delp v-0.1.12)
+#  (Last Emacs Update:  Tue Jul  2, 2024  5:35 pm by Gary Delp v-0.1.12)
+#
+# Tue Jul  2, 2024  5:35 pm by Gary Delp v-0.1.12:
 #
 # Mon Jul  1, 2024  8:19 pm by Gary Delp v-0.1.10:
 #
