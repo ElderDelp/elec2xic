@@ -12,19 +12,10 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul  2, 2024  5:45 pm by Gary Delp v-0.1.26)
+#  (Last Emacs Update:  Tue Jul  2, 2024  9:26 pm by Gary Delp v-0.1.26)
 #
-# Tue Jul  2, 2024  5:45 pm by Gary Delp v-0.1.26:
-#
-# Mon Jul  1, 2024  9:00 pm by Gary Delp v-0.1.24:
-#
-# Sun Jun 30, 2024  8:12 pm by Gary Delp v-0.1.24:
-#
-# Sat Jun 29, 2024 10:47 pm by Gary Delp v-0.1.22:
-#
-# Fri Jun 28, 2024 10:05 pm by Gary Delp v-0.1.22:
-#
-# Thu Jun 27, 2024 10:29 pm by Gary Delp v-0.1.16:
+# Tue Jul  2, 2024  9:26 pm by Gary Delp v-0.1.26:
+#     Tests pass this version
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: PYTHON/test_elec_data.py
@@ -115,10 +106,9 @@ class TestElecBase(unittest.TestCase):
                 dtype_dict,
                 check.name_db['dtype'][1],
                 f"Loop {i}: '{sep.join(names)}'")
-            version_dict = dtype_dict[names[2]]
-            self.assertEqual(
-                version_dict,
-                check.name_db['version'][1],
+            version_set = dtype_dict[names[2]].collide
+            self.assertTrue(
+                check in version_set,
                 f"Loop {i}: '{sep.join(names)}'")
 
     def test_symbols_2(self):
@@ -134,13 +124,13 @@ class TestElecBase(unittest.TestCase):
         """Create 3 new entities, and then try the lookups."""
         for (i, names) in enumerate(self._elec_test_data['add4']):
             tmp = ElecBase(*names)
-            print(f'loop {i} {str(tmp)=}')
+            print(f'\nloop {i} {str(tmp)=}')
             lookup = ElecBase.lookup_symbol(*self.wild_card)
             # self.assertEqual(i, len(lookup))
             lookup = ElecBase.lookup_symbol(
                 names[0], names[1], '.*', names[2])
             if len(lookup) == 0:
-                pprint.pprint(ElecBase._name_dict)
+                pprint.pprint(ElecBase._name_dict, indent=4, width=75)
             elif len(lookup) > 1:
                 self.assertTrue(
                     tmp in lookup,

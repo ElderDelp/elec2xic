@@ -10,16 +10,10 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul  2, 2024  5:35 pm by Gary Delp v-0.1.12)
+#  (Last Emacs Update:  Tue Jul  2, 2024  9:26 pm by Gary Delp v-0.1.12)
 #
-# Tue Jul  2, 2024  5:35 pm by Gary Delp v-0.1.12:
-#
-# Mon Jul  1, 2024  8:19 pm by Gary Delp v-0.1.10:
-#
-# Sun Jun 30, 2024  8:12 pm by Gary Delp v-0.1.10:
-#
-# Sat Jun 29, 2024 10:58 pm by Gary Delp v-0.1.8:
-#
+# Tue Jul  2, 2024  9:26 pm by Gary Delp v-0.1.12:
+#     Tests passes this version
 # Fri Jun 28, 2024 10:04 pm by Gary Delp v-0.1.6:
 #     got much of the baseclass written
 # Wed Jun 26, 2024  9:06 pm by Gary Delp v-0.1.2:
@@ -28,7 +22,6 @@ Classes for holding the various electric objects and their properties,
 # Here is the start of: PYTHON/elec_data.py
 # from functools import wraps
 # from dataclasses import dataclass
-import pdb
 from typing import Self, Any
 import re
 
@@ -82,6 +75,7 @@ class ElecBase():
          the_dtype: Tdtype_dict = cls.dummy
          the_end: Self"""
         the_version: Self = cls.dummy
+        obj.collide.add(obj)
         if library in cls._name_dict:
             the_library = cls._name_dict[library]
             if name in the_library:
@@ -91,20 +85,27 @@ class ElecBase():
                     if version in the_dtype:
                         the_version = the_dtype[version]
                         if the_version is not obj:
-                            if isinstance(the_version, type(cls._ElecNone)):
+                            if isinstance(
+                                    the_version,
+                                    type(cls.ElecNone.__class__)):
                                 the_version.collide.add(obj)
                             else:
+                                the_version = obj
                                 the_dtype[version] = obj
                     else:
+                        the_version = obj
                         the_dtype[version] = obj
                 else:
+                    the_version = obj
                     the_dtype =  {version: obj}
                     the_name[dtype] = the_dtype
             else:
+                the_version = obj
                 the_dtype =  {version: obj}
                 the_name = {dtype: the_dtype}
                 the_library[name] = the_name
         else:
+            the_version = obj
             the_dtype =  {version: obj}
             the_name = {dtype: the_dtype}
             the_library = {name: the_name}
@@ -138,31 +139,16 @@ class ElecBase():
                                     if cls.str_includes(version, a_version):
                                         the_version = the_dtype[a_version]
                                         if isinstance(the_version, cls.ElecNone.__class__):
-                                            ret.append(the_version)
-                                            for others in the_version.collide:
-                                                ret.append(others)
+                                            for objs in the_version.collide:
+                                                ret.append(objs)
         return ret
 
     @classmethod
     def cls_init(cls) -> None:
         """Allocate the class constant instance: ElecNone."""
         if cls.init_needed:
-            cls._ElecNone = cls("", "ElecNone", "")
-            cls.register_element(
-                cls._ElecNone,'ElecNone', type(cls).__name__,"")
+            cls.ElecNone = cls("", "ElecNone", "")
             cls.reset_name_dict()
-
-    # as shared in https://docs.python.org/3.11/library/functions.html#classmethod
-    #  Class methods can no longer wrap other descriptors such as property().
-    # @property
-    # @classmethod
-    # def ElecNone(cls) -> Self:
-    #     return cls._ElecNone
-
-    # @property
-    # @classmethod
-    # def master_name_dict(cls) -> Tlibrary_dict:
-    #     return cls.name_dict
 
     def __init__(self, library:str, name:str, version:str = "") -> None:
         self.name_db: dict[str, tuple] = self.dummy
