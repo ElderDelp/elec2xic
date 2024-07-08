@@ -12,9 +12,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Wed Jul  3, 2024  3:05 pm by Gary Delp v-0.1.30)
+#  (Last Emacs Update:  Sun Jul  7, 2024  5:49 pm by Gary Delp v-0.1.34)
 #
-# Wed Jul  3, 2024  3:05 pm by Gary Delp v-0.1.30:
+# Wed Jul  3, 2024  8:52 pm by Gary Delp v-0.1.30:
 #
 # Tue Jul  2, 2024  9:26 pm by Gary Delp v-0.1.26:
 #     Tests pass this version
@@ -23,9 +23,10 @@
 # Here is the start of: PYTHON/test_elec_data.py
 import unittest
 from typing import Final
-from elec_data import {
-    ElecBase
-}
+from . import (
+    ElecBase, ElecParms, ElecLine, ElecCellBody, # ElecCellRef,
+    ElecCellBodyLayout, ElecCellBodyCircuit, ElecCellBodyIcon
+)
 import pprint
 
 class TestElecBase(unittest.TestCase):
@@ -148,29 +149,66 @@ class TestElecParms(unittest.TestCase):
     """Collect the ElecData unit tests.
     """
 
+    def test_elec_parms_class(self):
+        """The class is an instance of itself."""
+        check = ElecParms()
+        print(f'{type(check)} {check=}')
+        self.assertIsInstance(check, cls=ElecParms)
+
 
 class TestElecLine(unittest.TestCase):
     """Collect the ElecData unit tests.
     """
+
+    def test_elec_line(self):
+        """The class produces an instance of itself."""
+        check = ElecLine("Hconductors|9.08e", ElecBase.ElecNone)
+        print(f'{type(check)} {check=}')
+        self.assertIsInstance(check, cls=ElecLine)
 
 
 class TestElecCellBody(unittest.TestCase):
     """Collect the ElecData unit tests.
     """
 
+    def test_elec_cell_body(self):
+        """The class produces an instance of itself."""
+        check = ElecCellBody("conductors", "classtest", "v0")
+        print(f'{type(check)} {check=}')
+        self.assertIsInstance(check, cls=ElecCellBody)
+
 
 class TestElecCellBodyLayout(unittest.TestCase):
     """Collect the ElecCellBodyLayout unit tests.
     """
 
+    def test_elec_cell_body_layout(self):
+        """The class produces an instance of itself."""
+        check = ElecCellBodyLayout("conductors", "classtest", "v0")
+        print(f'{type(check)} {check=}')
+        self.assertIsInstance(check, cls=ElecCellBodyLayout)
+
+
 class TestElecCellBodyCircuit(unittest.TestCase):
     """Collect the ElecCellBodyCircuit. unit tests.
     """
+
+    def test_elec_cell_body_circuit(self):
+        """The class produces an instance of itself."""
+        check = ElecCellBodyCircuit("conductors", "classtest", "v0")
+        print(f'{type(check)} {check=}')
+        self.assertIsInstance(check, cls=ElecCellBodyCircuit)
 
 
 class TestElecCellBodyIcon(unittest.TestCase):
     """Collect the ElecCellBodyIcon. unit tests.
     """
+
+    def test_elec_cell_body_icon(self):
+        """The class produces an instance of itself."""
+        check = ElecCellBodyIcon("conductors", "classtest", "v0")
+        print(f'{type(check)} {check=}')
+        self.assertIsInstance(check, cls=ElecCellBodyIcon)
 
 
 
