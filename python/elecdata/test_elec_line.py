@@ -11,7 +11,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Fri Jul  5, 2024 11:09 pm by Gary Delp v-0.1.4)
+#  (Last Emacs Update:  Tue Jul  9, 2024  6:09 pm by Gary Delp v-0.1.4)
+#
+# Tue Jul  9, 2024  6:09 pm by Gary Delp v-0.1.4:
 #
 # Fri Jul  5, 2024 11:09 pm by Gary Delp v-0.1.4:
 #
@@ -20,7 +22,7 @@
 # Always start with all of the imports
 # Here is the start of: ELECDATA/test_elec_line.py
 import unittest
-from .base_classes import ElecLine
+from .base_classes import ElecLine, ElecBase
 
 class TestElecLine(unittest.TestCase):
     """Collect the ElecLine unit tests.
@@ -100,7 +102,10 @@ X
         """The class is an instance of itself.
         """
 
-        self.assertIsInstance(ElecLine(), ElecLine)
+        self.assertIsInstance(
+            ElecLine(
+                "CAGallery;1{sch}||schematic|1604239895796|1681918119906|E",
+                container=ElecBase.ElecNone), ElecLine)
 
 # --------------------------------------------------------------------
 # test_elec_line.py ends here.

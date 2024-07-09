@@ -10,12 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul  8, 2024 10:05 pm by Gary Delp v-0.1.12)
+#  (Last Emacs Update:  Tue Jul  9, 2024  3:57 pm by Gary Delp v-0.1.12)
 #
-# Mon Jul  8, 2024 10:05 pm by Gary Delp v-0.1.12:
-#
-# Fri Jul  5, 2024 11:06 pm by Gary Delp v-0.1.10:
-#
+# Tue Jul  9, 2024  3:57 pm by Gary Delp v-0.1.12:
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/base_classes.py
@@ -181,6 +178,7 @@ class ElecLine():
         self.text = text
         self.container = container
 
+@gsd_init_class
 @dataclass
 class Location():
     x: float = 0
@@ -216,8 +214,11 @@ class Location():
     def __neg__(self) -> Self:
         return Location(-self.x, -self.y)
 
-    def __add__(self, other: Self) -> Self:
-        return Location(self.x + other.x, self.y + other.y)
+    def flip_v(self, other: Self) -> Self:
+        return Location(self.x, 2 * other.y - self.y )
+
+    def flip_h(self, other: Self) -> Self:
+        return Location(2 * other.x - self.x, self.y)
 
     def rot_deg(self, deg: float) -> Self:
         (c, s) = self.rot_deg_coef(deg)
@@ -237,11 +238,44 @@ class Location():
     def rot_deg_coef(cls, deg: float) -> list[float]:
         return cls.rot_rad_coef(math.radians(deg))
 
+    @classmethod
+    def cls_init(cls) -> None:
+        """Allocate the class constant instance: ElecNone."""
+        assert (1, 0) == cls.rot_deg_coef(0)
+        assert (1, 0) == cls.rot_deg_coef(360)
+        assert (0, 1) == cls.rot_deg_coef(90)
+        assert (0, -1) == cls.rot_deg_coef(270)
+        assert (-1, 0) == cls.rot_deg_coef(180)
 
-
-class ElecParms():
+class Parms():
     """Named Parms."""
 
-    symbols: dict[str, Self] = {}
+    symbols: dict[str, list[Self]] = {}
+
+    @classmethod
+    def clear_all(cls) -> None:
+        cls.symbols: dict[str, list[Self]] = {}
+
+    @classmethod
+    def lookup(cls, name: str) -> list[Self]:
+        if name not in cls.symbols:
+            cls.symbols[name] = []
+        return cls.symbols[name]
+
+    @classmethod
+    def add_symb(cls, inst: Self) -> list[Self]:
+        name = inst.name
+        if name not in cls.symbols:
+            cls.symbols[name] = [inst]
+        else:
+            cls.symbols[name].append(inst)
+        return cls.symbols[name]
+
+    def __init__(self, name: str, val:Any, descr: str = "") -> None:
+        self.name = name
+        self.val = val
+        self.descr = descr
+        self.add_symb(self)
+
 # --------------------------------------------------------------------
 # ELECDATA/base_classes.py ends here.

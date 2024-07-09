@@ -12,7 +12,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul  7, 2024  5:49 pm by Gary Delp v-0.1.34)
+#  (Last Emacs Update:  Tue Jul  9, 2024  6:31 pm by Gary Delp v-0.1.46)
+#
+# Tue Jul  9, 2024  6:22 pm by Gary Delp v-0.1.36:
 #
 # Wed Jul  3, 2024  8:52 pm by Gary Delp v-0.1.30:
 #
@@ -21,10 +23,14 @@
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: PYTHON/test_elec_data.py
+import sys
+print("In module products sys.path[0], __package__ ==", sys.path[0], __package__)
+print(f"In module products {__package__=}, {__name__=} ")
 import unittest
 from typing import Final
-from . import (
-    ElecBase, ElecParms, ElecLine, ElecCellBody, # ElecCellRef,
+from elecdata import (
+    ElecBase, Parms, ElecLine,
+    ElecCellBody,
     ElecCellBodyLayout, ElecCellBodyCircuit, ElecCellBodyIcon
 )
 import pprint
@@ -122,7 +128,7 @@ class TestElecBase(unittest.TestCase):
         should = "<<ElecBase library=lib1, name=bert, "
         should += "dtype=ElecBase, version=v1>>"
         self.assertEqual(f'{check}', should)
-        lookup = ElecBase.lookup_symbol(*self.wild_card)
+        lookup = check.lookup_symbol(*self.wild_card)
         self.assertEqual(1, len(lookup))
 
     def test_symbols_3(self):
@@ -145,15 +151,15 @@ class TestElecBase(unittest.TestCase):
                     tmp, lookup[0],
                     f'From loop {i} added {str(tmp)} returned {lookup=}')
 
-class TestElecParms(unittest.TestCase):
+class TestParms(unittest.TestCase):
     """Collect the ElecData unit tests.
     """
 
     def test_elec_parms_class(self):
         """The class is an instance of itself."""
-        check = ElecParms()
+        check = Parms("Lik", 1)
         print(f'{type(check)} {check=}')
-        self.assertIsInstance(check, cls=ElecParms)
+        self.assertIsInstance(check, cls=Parms)
 
 
 class TestElecLine(unittest.TestCase):
