@@ -10,7 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul  7, 2024  9:25 pm by Gary Delp v-0.1.12)
+#  (Last Emacs Update:  Mon Jul  8, 2024 10:05 pm by Gary Delp v-0.1.12)
+#
+# Mon Jul  8, 2024 10:05 pm by Gary Delp v-0.1.12:
 #
 # Fri Jul  5, 2024 11:06 pm by Gary Delp v-0.1.10:
 #
@@ -18,8 +20,12 @@
 # Always start with all of the imports
 # Here is the start of: ELECDATA/base_classes.py
 
+import functools
+import math
 from pathlib import Path
 from typing import Self, Any
+from dataclasses import dataclass
+
 import re
 jelib_path:Path = Path()
 
@@ -174,6 +180,63 @@ class ElecLine():
         """Process the text and store the references."""
         self.text = text
         self.container = container
+
+@dataclass
+class Location():
+    x: float = 0
+    y: float = 0
+
+    def shift_scale(self, shift: Self, scale: Self) -> Self:
+        return Location((self.x + shift.x) * scale.x, (self.y + shift.y) * scale.y)
+
+    def __add__(self, other: Self) -> Self:
+        return Location(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other: Self) -> Self:
+        return Location(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, other: Self) -> Self:
+        return Location(self.x * other.x, self.y * other.y)
+
+    def __iadd__(self, other: Self) -> Self:
+        self.x += other.x
+        self.y += other.y
+        return self
+
+    def __isub__(self, other: Self) -> Self:
+        self.x -= other.x
+        self.y -= other.y
+        return self
+
+    def __imul__(self, other: Self) -> Self:
+        self.x *= other.x
+        self.y *= other.y
+        return self
+
+    def __neg__(self) -> Self:
+        return Location(-self.x, -self.y)
+
+    def __add__(self, other: Self) -> Self:
+        return Location(self.x + other.x, self.y + other.y)
+
+    def rot_deg(self, deg: float) -> Self:
+        (c, s) = self.rot_deg_coef(deg)
+        return Location(c * self.x - s * self.y, s * self.x + c * self.y)
+
+    def rot_rad(self, rad: float) -> Self:
+        (c, s) = self.rot_rad_coef(rad)
+        return Location(c * self.x - s * self.y, s * self.x + c * self.y)
+
+    @staticmethod
+    @functools.cache
+    def rot_rad_coef(rad: float) -> list[float]:
+        ret = [math.cos(rad), math.sin(rad)]
+        return ret
+
+    @classmethod
+    def rot_deg_coef(cls, deg: float) -> list[float]:
+        return cls.rot_rad_coef(math.radians(deg))
+
 
 
 class ElecParms():
