@@ -11,13 +11,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul  9, 2024  6:09 pm by Gary Delp v-0.1.4)
+#  (Last Emacs Update:  Tue Jul  9, 2024 10:34 pm by Gary Delp v-0.1.4)
 #
-# Tue Jul  9, 2024  6:09 pm by Gary Delp v-0.1.4:
-#
-# Fri Jul  5, 2024 11:09 pm by Gary Delp v-0.1.4:
-#
-#  Thu Jul  4, 2024  4:33 pm by Gary Delp v-0.1.0:
+# Tue Jul  9, 2024 10:34 pm by Gary Delp v-0.1.4:
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/test_elec_line.py
