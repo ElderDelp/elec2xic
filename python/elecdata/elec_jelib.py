@@ -32,15 +32,17 @@ G       Group information
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Fri Jul  5, 2024 10:53 pm by Gary Delp v-0.1.4)
+#  (Last Emacs Update:  Thu Jul 11, 2024  2:14 pm by Gary Delp v-0.1.6)
+#
+# Thu Jul 11, 2024  1:37 pm by Gary Delp v-0.1.4:
 #
 # Thu Jul  4, 2024  5:23 pm by Gary Delp v-0.1.2:
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/elec_jelib.py
-from typing import NewType, Self
-from .elec_data import ElecBase
-from .elec_line import ElecLine
+from typing import Self, IO, Any
+from pathlib import Path
+from base_classes import ElecBase, ElecReadException, ElecLine, Parms
 
 class JeLIB(ElecBase):
     """In the context of elec_data and the structure of ElecBase, an
@@ -48,23 +50,73 @@ class JeLIB(ElecBase):
     potentially contain references to other JeLIBs.
     """
 
-    libs_read: dict[str, "JeLIB"] = {}
-    libs_in_progress: dict[str, "JeLIB"] = {}
-    lib_calls: list[str] = []
+    libs_read: dict[str, Self] = {}
+    # (name, filename, fromfile, line_no)
+    lib_call_stack: list[tuple[str, str, str, int]] = [
+        ('base', 'stdin', '', 0)]
 
     @classmethod
-    def read_lib(cls, name: str, filename:str) -> Self:
-        """Check the name (has it or is it been/being loaded?) raising
-        ElecReadException on a loop. If all OK, then return a read instance.
-        """
-        with open(filename, "read") as lines:
-            ret = cls(name, "root", version, lines)
+    def stack_str(cls, name: str, filename: str, line_no: int, mark: int = -1) -> str:
+        """Return a string representing the cls.lib_call_stack"""
+        j = 0
+        ret_str = f"{cls.__name__}lib_call_stack:\n"
+        for (j, ent) in enumerate(cls.lib_call_stack):
+            ret_str += f"{j}:{ent[2]}:{ent[3]}: reading "
+            if mark == j:
+                ret_str += "*prev* "
+            ret_str += f"{ent[0]} from {ent[1]}\n"
+        if name != '' and filename != '':
+            ret_str += f"{j+1}:{cls.lib_call_stack[-1][2]}:{line_no} "
+            ret_str += f"reading *this* {name} from {filename}\n"
+        return ret_str
 
-    def __init__(self, lib: str, name:str, version:str, source: list[str] ) -> None:
+    @classmethod
+    def read_lib(cls, name: str, filename:str, line_no: int) -> Self:
+        """Check the name (has it or is it been/being loaded?) raising
+        ElecReadException on a loop. If all OK return a read instance.
+        """
+        i = -1
+        # If already read, then just return the instance
+        if name in cls.libs_read:
+            return cls.libs_read[name]
+
+        # check for a read loop
+        this_read = (name, filename)
+        for (i, already) in enumerate(cls.lib_call_stack):
+            if this_read[:] == already[:2]:
+                # already reading this file, there is a loop!
+                err_str = f"ElecReadException: opening '{filename}' "
+                err_str += cls.stack_str(name, filename, line_no, i)
+                raise ElecReadException(err_str)
+        filep = Path(filename)
+        if not filep.exists:
+            err_str = f"ElecReadException: '{filename}' does not exist."
+            err_str += cls.stack_str(name, filename, line_no, i)
+            raise ElecReadException(err_str)
+        cls.stack_str.append(
+            (name, filename, cls.lib_call_stack[-1][2], line_no))
+        with filep.open(filename) as lib_fp:
+            ret = cls(lib=name, name="libRoot", version=filename, source=lib_fp)
+        cls.lib_call_stack.pop()
+        return ret
+
+
+    def __init__(self, source: IO[Any], lib: str, name:str, version:str) -> None:
         """Read line by line, pushing into other libraries referenced,
         reading them in before continuing to the next line.
         """
-        pass
+        super().__init__(lib, name, version)
+        self.H_eader: list[ElecLine] = []
+        self.V_iew: list[ElecLine] = []
+        self.L_ibsibs: list[ElecLine] = []
+        self.R_Cells: list[ElecLine] = []
+        self.F_ext_cells: list[ElecLine] = []
+        self.T_ech: list[ElecLine] = []
+        self.O_tools: list[ElecLine] = []
+        self.C_ells: list[ElecLine] = []
+        self.G_roups: list[ElecLine] = []
+        ElecLine.read_loop(source)
+
 
 
 

@@ -12,7 +12,7 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul  9, 2024  6:31 pm by Gary Delp v-0.1.46)
+#  (Last Emacs Update:  Tue Jul  9, 2024  6:42 pm by Gary Delp v-0.1.50)
 #
 # Tue Jul  9, 2024  6:22 pm by Gary Delp v-0.1.36:
 #
@@ -24,11 +24,11 @@
 # Always start with all of the imports
 # Here is the start of: PYTHON/test_elec_data.py
 import sys
-print("In module products sys.path[0], __package__ ==", sys.path[0], __package__)
-print(f"In module products {__package__=}, {__name__=} ")
+print(f"{sys.path[0]=} {__package__=}, {__name__=} ")
+pkg = sys.path[0]
 import unittest
 from typing import Final
-from elecdata import (
+from pkg import (
     ElecBase, Parms, ElecLine,
     ElecCellBody,
     ElecCellBodyLayout, ElecCellBodyCircuit, ElecCellBodyIcon

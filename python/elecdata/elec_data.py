@@ -10,7 +10,7 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul  9, 2024  3:46 pm by Gary Delp v-0.1.16)
+#  (Last Emacs Update:  Thu Jul 11, 2024 11:34 am by Gary Delp v-0.1.18)
 #
 # Tue Jul  9, 2024  3:46 pm by Gary Delp v-0.1.16:
 #
@@ -26,7 +26,7 @@ Classes for holding the various electric objects and their properties,
 # Here is the start of: PYTHON/elec_data.py
 # from functools import wraps
 # from dataclasses import dataclass
-from .base_classes import ElecBase, Parms
+from base_classes import ElecBase, Parms
 
 class ElecCellBody(ElecBase):
     """Class for Cell Bodies."""

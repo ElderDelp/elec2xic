@@ -10,7 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul  9, 2024  3:57 pm by Gary Delp v-0.1.12)
+#  (Last Emacs Update:  Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12)
+#
+# Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12:
 #
 # Tue Jul  9, 2024  3:57 pm by Gary Delp v-0.1.12:
 # --------------------------------------------------------------------
@@ -20,7 +22,7 @@
 import functools
 import math
 from pathlib import Path
-from typing import Self, Any
+from typing import Self, Any, IO
 from dataclasses import dataclass
 
 import re
@@ -170,8 +172,32 @@ class ElecBase():
         ret += '>>'
         return ret
 
+@gsd_init_class
 class ElecLine():
     """One of these objects for every non-comment Line in JELIB."""
+
+    the_readers: dict[str, Self] = {}
+
+    @classmethod
+    def read_lines(cls,lib: str, source: IO[Any]):
+        pass
+
+    @classmethod
+    def register_reader(cls, letter: str, reader: Self) -> None:
+        """Register a Reader subclass for lines starting with a given letter."""
+        cls.the_readers[letter] = reader
+
+    @classmethod
+    def get_reader(cls, letter: str) -> Self:
+        """Register a Reader subclass for lines starting with a given letter."""
+        if letter in cls.the_readers:
+            return cls.the_readers[letter]
+        err_str = f"No reader registered for {letter=}"
+        raise ElecReadException(err_str)
+
+    @classmethod
+    def cls_init(cls) -> None:
+        pass
 
     def __init__(self, text: str, container: ElecBase) -> None:
         """Process the text and store the references."""
