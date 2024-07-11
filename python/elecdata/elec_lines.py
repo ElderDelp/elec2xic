@@ -45,17 +45,17 @@ H<name> | <version> [ | <variable> ]*
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Fri Jul  5, 2024 11:04 pm by Gary Delp v-0.1.10)
+#  (Last Emacs Update:  Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12)
+#
+# Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12:
 #
 # Fri Jul  5, 2024 11:04 pm by Gary Delp v-0.1.10:
 #
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/elec_lines.py
-from .base_classes import ElecBase, ElecLine
-
-class ElecParms():
-    pass
+from base_classes import ElecBase, ElecLine, Parms
+from elec_jelib import JeLIB
 
 
 class ElecCellRef(ElecBase):
@@ -65,7 +65,7 @@ class ElecCellRef(ElecBase):
         super().__init__(library, name, version)
 
 
-class ElecLineHeader(ElecLine):
+class ElecLineH_eader(ElecLine):
     pass
 
 
