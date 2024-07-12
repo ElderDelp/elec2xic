@@ -10,7 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Jul 11, 2024 11:01 pm by Gary Delp v-0.1.16)
+#  (Last Emacs Update:  Fri Jul 12, 2024  5:50 pm by Gary Delp v-0.1.16)
+#
+# Fri Jul 12, 2024  5:50 pm by Gary Delp v-0.1.16:
 #
 # Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12:
 #
@@ -37,6 +39,29 @@ def gsd_init_class(klass):
     klass.cls_init()
     return klass
 
+# https://stackoverflow.com/questions/100003/what-are-metaclasses-in-python
+# https://docs.python.org/3/reference/compound_stmts.html#grammar-token-python-grammar-type_params
+class Watcher(type):
+    def __init__(cls, name, bases, clsdict):
+        if len(cls.mro()) > 2:
+            print("was subclassed by " + name)
+        super(Watcher, cls).__init__(name, bases, clsdict)
+
+class SuperClass:
+    __metaclass__ = Watcher
+
+
+print("foo")
+
+class SubClass0(SuperClass):
+  pass
+
+print("bar")
+
+class SubClass1(SuperClass):
+  print("test")
+
+######################################################################
 @gsd_init_class
 class ElecBase():
     """Base with lookup dicts. Init and lookup.  Holds a three tiered
@@ -173,7 +198,7 @@ class ElecBase():
         return ret
 
 @gsd_init_class
-class ElecLine():
+class ElecLine(type):
     """One of these objects for every non-comment Line in JELIB."""
 
     the_readers: dict[str, Self] = {}
@@ -203,6 +228,11 @@ class ElecLine():
         """Process the text and store the references."""
         self.text = text
         self.container = container
+
+def elec_add_line_Parser(key:str):
+    def decorator(klass):
+        klass.register_reader(key, klass)
+        return klass
 
 @gsd_init_class
 @dataclass

@@ -45,7 +45,9 @@ H<name> | <version> [ | <variable> ]*
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Jul 11, 2024 11:01 pm by Gary Delp v-0.1.14)
+#  (Last Emacs Update:  Fri Jul 12, 2024  5:50 pm by Gary Delp v-0.1.14)
+#
+# Fri Jul 12, 2024  5:50 pm by Gary Delp v-0.1.14:
 #
 # Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12:
 #
@@ -54,7 +56,7 @@ H<name> | <version> [ | <variable> ]*
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/elec_lines.py
-from base_classes import ElecBase, ElecLine, Parms
+from base_classes import ElecBase, ElecLine, Parms, elec_add_line_Parser
 from elec_jelib import JeLIB
 
 
@@ -64,9 +66,9 @@ class ElecCellRef(ElecBase):
     def __init__(self, library:str, name:str, version:str = "") -> None:
         super().__init__(library, name, version)
 
-
+@elec_add_line_Parser("H")
 class ElecLineH_eader(ElecLine):
-    """H<name> | <version> [ | <variable> ]*
+    """Hx<name> | <version> [ | <variable> ]*
 <name>  the name of the library.
 <version>       the version of Electric that wrote the library.
 <variable>      a list of variables on the library (see Section 10-4-1).
