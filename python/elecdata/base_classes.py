@@ -10,7 +10,7 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12)
+#  (Last Emacs Update:  Thu Jul 11, 2024 11:01 pm by Gary Delp v-0.1.16)
 #
 # Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12:
 #
@@ -255,18 +255,29 @@ class Location():
         return Location(c * self.x - s * self.y, s * self.x + c * self.y)
 
     @staticmethod
+    def round_0_000001(inp: float) -> float:
+
+    @staticmethod
     @functools.cache
     def rot_rad_coef(rad: float) -> list[float]:
         ret = [math.cos(rad), math.sin(rad)]
         return ret
 
     @classmethod
+    @functools.cache
     def rot_deg_coef(cls, deg: float) -> list[float]:
-        return cls.rot_rad_coef(math.radians(deg))
+        c, s = cls.rot_rad_coef(math.radians(deg))
+        return ((int(c * (
 
     @classmethod
     def cls_init(cls) -> None:
         """Allocate the class constant instance: ElecNone."""
+
+        print(f" {cls.rot_deg_coef(0)=}")
+        print(f" {cls.rot_deg_coef(360)=}")
+        print(f" {cls.rot_deg_coef(90)=}")
+        print(f" {cls.rot_deg_coef(270)=}")
+        print(f" {cls.rot_deg_coef(180)=}")
         assert (1, 0) == cls.rot_deg_coef(0)
         assert (1, 0) == cls.rot_deg_coef(360)
         assert (0, 1) == cls.rot_deg_coef(90)

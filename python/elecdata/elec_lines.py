@@ -45,7 +45,7 @@ H<name> | <version> [ | <variable> ]*
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12)
+#  (Last Emacs Update:  Thu Jul 11, 2024 11:01 pm by Gary Delp v-0.1.14)
 #
 # Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12:
 #
@@ -66,7 +66,14 @@ class ElecCellRef(ElecBase):
 
 
 class ElecLineH_eader(ElecLine):
-    pass
+    """H<name> | <version> [ | <variable> ]*
+<name>  the name of the library.
+<version>       the version of Electric that wrote the library.
+<variable>      a list of variables on the library (see Section 10-4-1).
+
+The name of the library is used in the JELIB file to identify references to this library. The actual name of this library is obtained from the file path of this JELIB file.
+pass."""
+
 
 
 # --------------------------------------------------------------------

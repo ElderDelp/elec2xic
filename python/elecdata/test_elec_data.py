@@ -12,7 +12,7 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul  9, 2024  6:42 pm by Gary Delp v-0.1.50)
+#  (Last Emacs Update:  Thu Jul 11, 2024  8:44 pm by Gary Delp v-0.1.52)
 #
 # Tue Jul  9, 2024  6:22 pm by Gary Delp v-0.1.36:
 #
@@ -28,7 +28,7 @@ print(f"{sys.path[0]=} {__package__=}, {__name__=} ")
 pkg = sys.path[0]
 import unittest
 from typing import Final
-from pkg import (
+from __init__ import (
     ElecBase, Parms, ElecLine,
     ElecCellBody,
     ElecCellBodyLayout, ElecCellBodyCircuit, ElecCellBodyIcon
