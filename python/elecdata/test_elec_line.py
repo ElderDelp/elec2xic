@@ -11,14 +11,14 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul  9, 2024 10:34 pm by Gary Delp v-0.1.4)
+#  (Last Emacs Update:  Sat Jul 13, 2024 10:09 pm by Gary Delp v-0.1.6)
 #
-# Tue Jul  9, 2024 10:34 pm by Gary Delp v-0.1.4:
+# Sat Jul 13, 2024 10:09 pm by Gary Delp v-0.1.4:
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/test_elec_line.py
 import unittest
-from .base_classes import ElecLine, ElecBase
+from base_classes import ElecLine, ElecBase
 
 class TestElecLine(unittest.TestCase):
     """Collect the ElecLine unit tests.
@@ -103,5 +103,9 @@ X
                 "CAGallery;1{sch}||schematic|1604239895796|1681918119906|E",
                 container=ElecBase.ElecNone), ElecLine)
 
+# --------------------------------------------------------------------
+# Local Variables:
+# compile-command: "python -m unittest"
+# End:
 # --------------------------------------------------------------------
 # test_elec_line.py ends here.

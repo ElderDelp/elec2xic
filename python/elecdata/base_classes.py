@@ -10,13 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Fri Jul 12, 2024  5:50 pm by Gary Delp v-0.1.16)
+#  (Last Emacs Update:  Sat Jul 13, 2024 10:06 pm by Gary Delp v-0.1.18)
 #
-# Fri Jul 12, 2024  5:50 pm by Gary Delp v-0.1.16:
-#
-# Thu Jul 11, 2024  5:11 pm by Gary Delp v-0.1.12:
-#
-# Tue Jul  9, 2024  3:57 pm by Gary Delp v-0.1.12:
+# Sat Jul 13, 2024  9:51 pm by Gary Delp v-0.1.16:
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/base_classes.py
@@ -24,8 +20,9 @@
 import functools
 import math
 from pathlib import Path
-from typing import Self, Any, IO
-from dataclasses import dataclass
+from types import MethodDescriptorType
+from typing import Self, Any, IO, Final
+# from dataclasses import dataclass
 
 import re
 jelib_path:Path = Path()
@@ -39,29 +36,19 @@ def gsd_init_class(klass):
     klass.cls_init()
     return klass
 
-# https://stackoverflow.com/questions/100003/what-are-metaclasses-in-python
-# https://docs.python.org/3/reference/compound_stmts.html#grammar-token-python-grammar-type_params
-class Watcher(type):
-    def __init__(cls, name, bases, clsdict):
-        if len(cls.mro()) > 2:
-            print("was subclassed by " + name)
-        super(Watcher, cls).__init__(name, bases, clsdict)
-
-class SuperClass:
-    __metaclass__ = Watcher
-
-
-print("foo")
-
-class SubClass0(SuperClass):
-  pass
-
-print("bar")
-
-class SubClass1(SuperClass):
-  print("test")
+def elec_add_line_Parser(key:str):
+    """A decorator for subclasses of ElecLine to let them register for
+    handling their "letter".
+    """
+    the_key: str = key
+    def register(klass):
+        nonlocal key
+        klass.register_reader(the_key, klass)
+        return klass
+    return register
 
 ######################################################################
+
 @gsd_init_class
 class ElecBase():
     """Base with lookup dicts. Init and lookup.  Holds a three tiered
@@ -198,7 +185,7 @@ class ElecBase():
         return ret
 
 @gsd_init_class
-class ElecLine(type):
+class ElecLine():
     """One of these objects for every non-comment Line in JELIB."""
 
     the_readers: dict[str, Self] = {}
@@ -229,28 +216,29 @@ class ElecLine(type):
         self.text = text
         self.container = container
 
-def elec_add_line_Parser(key:str):
-    def decorator(klass):
-        klass.register_reader(key, klass)
-        return klass
 
 @gsd_init_class
-@dataclass
 class Location():
-    x: float = 0
-    y: float = 0
+    """Holds (X, Y)."""
+
+    small: Final[float] = math.ldexp(0.5, -24)
+
+    def __init__(self, x: float, y: float) -> None:
+        self.x: float = x
+        self.y: float = y
 
     def shift_scale(self, shift: Self, scale: Self) -> Self:
-        return Location((self.x + shift.x) * scale.x, (self.y + shift.y) * scale.y)
+        return type(self)((self.x + shift.x) * scale.x,
+                          (self.y + shift.y) * scale.y)
 
     def __add__(self, other: Self) -> Self:
-        return Location(self.x + other.x, self.y + other.y)
+        return type(self)(self.x + other.x, self.y + other.y)
 
     def __sub__(self, other: Self) -> Self:
-        return Location(self.x - other.x, self.y - other.y)
+        return type(self)(self.x - other.x, self.y - other.y)
 
     def __mul__(self, other: Self) -> Self:
-        return Location(self.x * other.x, self.y * other.y)
+        return type(self)(self.x * other.x, self.y * other.y)
 
     def __iadd__(self, other: Self) -> Self:
         self.x += other.x
@@ -267,25 +255,32 @@ class Location():
         self.y *= other.y
         return self
 
+    def __eq__(self, other: Self) -> bool:
+        return self.x == other.x and self.y == other.y
+
     def __neg__(self) -> Self:
-        return Location(-self.x, -self.y)
+        return type(self)(-self.x, -self.y)
 
     def flip_v(self, other: Self) -> Self:
-        return Location(self.x, 2 * other.y - self.y )
+        return type(self)(self.x, 2 * other.y - self.y )
 
     def flip_h(self, other: Self) -> Self:
-        return Location(2 * other.x - self.x, self.y)
+        return type(self)(2 * other.x - self.x, self.y)
 
     def rot_deg(self, deg: float) -> Self:
         (c, s) = self.rot_deg_coef(deg)
-        return Location(c * self.x - s * self.y, s * self.x + c * self.y)
+        return type(self)(c * self.x - s * self.y, s * self.x + c * self.y)
 
     def rot_rad(self, rad: float) -> Self:
         (c, s) = self.rot_rad_coef(rad)
-        return Location(c * self.x - s * self.y, s * self.x + c * self.y)
+        return type(self)(c * self.x - s * self.y, s * self.x + c * self.y)
 
-    @staticmethod
-    def round_0_000001(inp: float) -> float:
+    @classmethod
+    def round_0_000001(cls, inp: float) -> float:
+        """Return a float that is rounded to 24 fractional bits."""
+        if math.fabs(inp) < cls.small:
+            return 0.0
+        return inp
 
     @staticmethod
     @functools.cache
@@ -297,7 +292,7 @@ class Location():
     @functools.cache
     def rot_deg_coef(cls, deg: float) -> list[float]:
         c, s = cls.rot_rad_coef(math.radians(deg))
-        return ((int(c * (
+        return [cls.round_0_000001(c), cls.round_0_000001(s) ]
 
     @classmethod
     def cls_init(cls) -> None:
@@ -308,11 +303,11 @@ class Location():
         print(f" {cls.rot_deg_coef(90)=}")
         print(f" {cls.rot_deg_coef(270)=}")
         print(f" {cls.rot_deg_coef(180)=}")
-        assert (1, 0) == cls.rot_deg_coef(0)
-        assert (1, 0) == cls.rot_deg_coef(360)
-        assert (0, 1) == cls.rot_deg_coef(90)
-        assert (0, -1) == cls.rot_deg_coef(270)
-        assert (-1, 0) == cls.rot_deg_coef(180)
+        assert [1, 0] == cls.rot_deg_coef(0)
+        assert [1, 0] == cls.rot_deg_coef(360)
+        assert [0, 1] == cls.rot_deg_coef(90)
+        assert [0, -1] == cls.rot_deg_coef(270)
+        assert [-1, 0] == cls.rot_deg_coef(180)
 
 class Parms():
     """Named Parms."""
