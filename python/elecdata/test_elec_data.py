@@ -12,7 +12,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Jul 11, 2024  8:44 pm by Gary Delp v-0.1.52)
+#  (Last Emacs Update:  Sun Jul 14, 2024  9:22 pm by Gary Delp v-0.1.56)
+#
+# Sun Jul 14, 2024  8:48 pm by Gary Delp v-0.1.52:
 #
 # Tue Jul  9, 2024  6:22 pm by Gary Delp v-0.1.36:
 #
@@ -29,7 +31,7 @@ pkg = sys.path[0]
 import unittest
 from typing import Final
 from __init__ import (
-    ElecBase, Parms, ElecLine,
+    ElecBase, Parms, ElecLine, Location,
     ElecCellBody,
     ElecCellBodyLayout, ElecCellBodyCircuit, ElecCellBodyIcon
 )
@@ -216,6 +218,35 @@ class TestElecCellBodyIcon(unittest.TestCase):
         print(f'{type(check)} {check=}')
         self.assertIsInstance(check, cls=ElecCellBodyIcon)
 
+
+class TestLocation(unittest.TestCase):
+    """Simple checks on location."""
+
+    def setUp(self) -> None:
+        """ Setup to ckeck scaling of a components."""
+        self.component_points: list[Location] = [
+            Location(-6, -6), Location(6, 6), Location(0, 0),
+            Location(-6, -4), Location(-6, -2), Location(-6, 0),
+            Location(-6, 2), Location(-6, 4),
+            Location(6, -4), Location(6, -2), Location(6, 0),]
+        return super().setUp()
+
+    def test_location_xform(self):
+        self.assertEqual([1, 0], Location.rot_deg_coef(0))
+        self.assertEqual([1, 0], Location.rot_deg_coef(360))
+        self.assertEqual([0, 1], Location.rot_deg_coef(90))
+        self.assertEqual([0, -1], Location.rot_deg_coef(270))
+        self.assertEqual([-1, 0], Location.rot_deg_coef(180))
+
+    def test_location_scale(self):
+        print('calling test_location_scale')
+        result: list[Location] = []
+        scale = Location(1, 1)
+        for a in self.component_points:
+            self.assertEqual(a, a*scale)
+        for a in self.component_points:
+            result.append(a)
+        self.assertEqual(result, self.component_points)
 
 
 # Local Variables:

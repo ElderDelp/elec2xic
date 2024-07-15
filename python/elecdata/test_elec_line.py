@@ -11,7 +11,7 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sat Jul 13, 2024 10:09 pm by Gary Delp v-0.1.6)
+#  (Last Emacs Update:  Sun Jul 14, 2024  9:21 pm by Gary Delp v-0.1.8)
 #
 # Sat Jul 13, 2024 10:09 pm by Gary Delp v-0.1.4:
 # --------------------------------------------------------------------
@@ -92,7 +92,6 @@ Ngeneric:Invisible-Pin|pin@2||-17|32|||||ART_message(D5G3;)Sies 27 February 2021
 Ngeneric:Invisible-Pin|pin@3||-15|36|||||ART_message(D5G3;)Ssee memo 2020-65
 X
 """
-
 
     def test_elec_line_class(self):
         """The class is an instance of itself.

@@ -10,7 +10,7 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sat Jul 13, 2024 10:06 pm by Gary Delp v-0.1.18)
+#  (Last Emacs Update:  Sun Jul 14, 2024  9:21 pm by Gary Delp v-0.1.20)
 #
 # Sat Jul 13, 2024  9:51 pm by Gary Delp v-0.1.16:
 # --------------------------------------------------------------------
@@ -297,12 +297,6 @@ class Location():
     @classmethod
     def cls_init(cls) -> None:
         """Allocate the class constant instance: ElecNone."""
-
-        print(f" {cls.rot_deg_coef(0)=}")
-        print(f" {cls.rot_deg_coef(360)=}")
-        print(f" {cls.rot_deg_coef(90)=}")
-        print(f" {cls.rot_deg_coef(270)=}")
-        print(f" {cls.rot_deg_coef(180)=}")
         assert [1, 0] == cls.rot_deg_coef(0)
         assert [1, 0] == cls.rot_deg_coef(360)
         assert [0, 1] == cls.rot_deg_coef(90)
