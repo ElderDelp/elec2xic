@@ -32,7 +32,7 @@ G       Group information
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul 15, 2024  9:03 pm by Gary Delp v-0.1.8)
+#  (Last Emacs Update:  Tue Jul 16, 2024  5:41 pm by Gary Delp v-0.1.10)
 #
 # Mon Jul 15, 2024  9:03 pm by Gary Delp v-0.1.8:
 #
@@ -149,7 +149,7 @@ class JeLIB(ElecBase):
             err_str = 'The source does not start with a header line:'
             err_str += f"{self.line_no}: is '{rline}'"
             raise ElecReadException(err_str)
-        ElecLine.get_reader('H')(rline, self, self.line_no)
+        self.eline_cp.reader_d['H'](rline, self, self.line_no)
         while rline := str(self.gline()):
             ltype = rline[0]
 
@@ -166,7 +166,8 @@ class ElecLineH_eader(ElecLine):
     references to this library. The actual name of this library is
     obtained from the file path of this JELIB file.
     """
-
+    def proc_line(self):
+        pass
 
 
 

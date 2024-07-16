@@ -11,7 +11,7 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul 15, 2024  8:39 pm by Gary Delp v-0.1.10)
+#  (Last Emacs Update:  Tue Jul 16, 2024  5:45 pm by Gary Delp v-0.1.12)
 #
 # Sat Jul 13, 2024 10:09 pm by Gary Delp v-0.1.4:
 # --------------------------------------------------------------------
@@ -19,10 +19,10 @@
 # Here is the start of: ELECDATA/test_elec_line.py
 import unittest
 from io import StringIO
-from base_classes import (
+from __init__ import (
     ElecLine, ElecBase, ElecReadException,
+    JeLIB,
     )
-from elec_jelib import JeLIB
 
 class TestElecLine(unittest.TestCase):
     """Collect the ElecLine unit tests.

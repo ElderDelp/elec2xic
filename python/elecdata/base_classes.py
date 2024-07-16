@@ -10,7 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul 15, 2024  9:01 pm by Gary Delp v-0.1.20)
+#  (Last Emacs Update:  Tue Jul 16, 2024  5:41 pm by Gary Delp v-0.1.24)
+#
+# Tue Jul 16, 2024  5:22 pm by Gary Delp v-0.1.20:
 #
 # Mon Jul 15, 2024  8:39 pm by Gary Delp v-0.1.18:
 #
@@ -37,17 +39,13 @@ def gsd_init_class(klass):
     klass.cls_init()
     return klass
 
-def elec_add_line_Parser(key:str):
-    """A decorator for subclasses of ElecLine to let them register for
-    handling their "letter".
-    """
-    the_key: str = key
-    def register(klass):
-        nonlocal key
-        klass.register_reader(the_key, klass)
-        return klass
-    return register
-
+### ------------------------------------------------------------------
+## Decorator def moved to below class ElecLine declaration
+# def elec_add_line_Parser(key:str):
+#     """A decorator for subclasses of ElecLine to let them register for
+#     handling their "letter".
+#     """
+#  ...
 ######################################################################
 
 @gsd_init_class
@@ -190,15 +188,15 @@ class ElecBase():
 class ElecLine():
     """One of these objects for every non-comment Line in JELIB."""
 
-    reader_d: dict[str, Self] = {}
+    reader_d: dict[str, type] = {}
 
     @classmethod
-    def register_reader(cls, letter: str, reader: Self) -> None:
+    def register_reader(cls, letter: str, reader: type) -> None:
         """Register a Reader subclass for lines starting with a given letter."""
         cls.reader_d[letter] = reader
 
     @classmethod
-    def get_reader(cls, letter: str) -> Self:
+    def get_reader(cls, letter: str) -> type:
         """Return the Reader subclass for lines starting with a given letter."""
         if letter in cls.reader_d:
             return cls.reader_d[letter]
@@ -209,10 +207,31 @@ class ElecLine():
     def cls_init(cls) -> None:
         pass
 
-    def __init__(self, text: str, container: ElecBase) -> None:
+    def __init__(self, text: str, container: ElecBase, line_no: int = 0) -> None:
         """Process the text and store the references."""
         self.text = text
         self.container = container
+        self.line_no = line_no
+
+    def proc_line(self):
+        pass
+
+def elec_add_line_Parser(key:str):
+    """A decorator for subclasses of ElecLine to let them register for
+    handling their "letter".
+    """
+    the_key: str = key
+    def register(klass):
+        nonlocal key
+        if isinstance(klass, type(ElecLine)):
+            klass.register_reader(the_key, type(klass))
+        else:
+            err_str = 'Tried to add a reader class that is not a subclass '
+            err_str += f'{type(ElecLine)=}, new class "{klass.__name__}" is '
+            err_str += f'{type(klass)=}'
+            raise ElecReadException(err_str)
+        return klass
+    return register
 
 
 @gsd_init_class
