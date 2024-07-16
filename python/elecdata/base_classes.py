@@ -10,9 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul 15, 2024  7:49 pm by Gary Delp v-0.1.18)
+#  (Last Emacs Update:  Mon Jul 15, 2024  9:01 pm by Gary Delp v-0.1.20)
 #
-# Mon Jul 15, 2024  7:49 pm by Gary Delp v-0.1.18:
+# Mon Jul 15, 2024  8:39 pm by Gary Delp v-0.1.18:
 #
 # --------------------------------------------------------------------
 # Always start with all of the imports
@@ -185,22 +185,23 @@ class ElecBase():
         ret += '>>'
         return ret
 
+
 @gsd_init_class
 class ElecLine():
     """One of these objects for every non-comment Line in JELIB."""
 
-    the_readers: dict[str, Self] = {}
+    reader_d: dict[str, Self] = {}
 
     @classmethod
     def register_reader(cls, letter: str, reader: Self) -> None:
         """Register a Reader subclass for lines starting with a given letter."""
-        cls.the_readers[letter] = reader
+        cls.reader_d[letter] = reader
 
     @classmethod
     def get_reader(cls, letter: str) -> Self:
-        """Register a Reader subclass for lines starting with a given letter."""
-        if letter in cls.the_readers:
-            return cls.the_readers[letter]
+        """Return the Reader subclass for lines starting with a given letter."""
+        if letter in cls.reader_d:
+            return cls.reader_d[letter]
         err_str = f"No reader registered for {letter=}"
         raise ElecReadException(err_str)
 

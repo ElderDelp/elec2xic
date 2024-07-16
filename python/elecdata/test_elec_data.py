@@ -10,24 +10,14 @@
 """Commentary:
 
 """
-
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul 14, 2024  9:22 pm by Gary Delp v-0.1.56)
+#  (Last Emacs Update:  Mon Jul 15, 2024  9:18 pm by Gary Delp v-0.1.56)
 #
-# Sun Jul 14, 2024  8:48 pm by Gary Delp v-0.1.52:
-#
-# Tue Jul  9, 2024  6:22 pm by Gary Delp v-0.1.36:
-#
-# Wed Jul  3, 2024  8:52 pm by Gary Delp v-0.1.30:
-#
-# Tue Jul  2, 2024  9:26 pm by Gary Delp v-0.1.26:
+# Mon Jul 15, 2024  9:18 pm by Gary Delp v-0.1.56:
 #     Tests pass this version
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: PYTHON/test_elec_data.py
-import sys
-print(f"{sys.path[0]=} {__package__=}, {__name__=} ")
-pkg = sys.path[0]
 import unittest
 from typing import Final
 from __init__ import (
@@ -250,7 +240,7 @@ class TestLocation(unittest.TestCase):
 
 
 # Local Variables:
-# compile-command: "python -m unittest"
+# compile-command: "python -m unittest --verbose"
 # End:
 # --------------------------------------------------------------------
 # test_elec_data.py ends here.
