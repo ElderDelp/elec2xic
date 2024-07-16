@@ -11,14 +11,18 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul 14, 2024  9:21 pm by Gary Delp v-0.1.8)
+#  (Last Emacs Update:  Mon Jul 15, 2024  8:39 pm by Gary Delp v-0.1.10)
 #
 # Sat Jul 13, 2024 10:09 pm by Gary Delp v-0.1.4:
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/test_elec_line.py
 import unittest
-from base_classes import ElecLine, ElecBase
+from io import StringIO
+from base_classes import (
+    ElecLine, ElecBase, ElecReadException,
+    )
+from elec_jelib import JeLIB
 
 class TestElecLine(unittest.TestCase):
     """Collect the ElecLine unit tests.
@@ -101,6 +105,14 @@ X
             ElecLine(
                 "CAGallery;1{sch}||schematic|1604239895796|1681918119906|E",
                 container=ElecBase.ElecNone), ElecLine)
+    def test_jelib_read_loop_fail(self):
+        """Does JeLIB fail if input does not start with an H line."""
+        inp = StringIO("#\nAGallery\n")
+        def err() -> JeLIB:
+            nonlocal inp
+            return JeLIB(inp, "err", "should", "fail")
+
+        self.assertRaises(ElecReadException, err)
 
 # --------------------------------------------------------------------
 # Local Variables:

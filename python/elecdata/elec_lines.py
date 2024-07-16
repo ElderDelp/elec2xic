@@ -45,7 +45,9 @@ H<name> | <version> [ | <variable> ]*
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Fri Jul 12, 2024  5:50 pm by Gary Delp v-0.1.14)
+#  (Last Emacs Update:  Mon Jul 15, 2024  2:08 pm by Gary Delp v-0.1.16)
+#
+# Mon Jul 15, 2024  2:07 pm by Gary Delp v-0.1.14:
 #
 # Fri Jul 12, 2024  5:50 pm by Gary Delp v-0.1.14:
 #
@@ -56,9 +58,10 @@ H<name> | <version> [ | <variable> ]*
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/elec_lines.py
-from base_classes import ElecBase, ElecLine, Parms, elec_add_line_Parser
+from base_classes import ElecBase, ElecLine, Parms, elec_add_line_Parserw
 from elec_jelib import JeLIB
 
+not_used
 
 class ElecCellRef(ElecBase):
     """Class for Cell References."""
@@ -69,12 +72,15 @@ class ElecCellRef(ElecBase):
 @elec_add_line_Parser("H")
 class ElecLineH_eader(ElecLine):
     """Hx<name> | <version> [ | <variable> ]*
-<name>  the name of the library.
-<version>       the version of Electric that wrote the library.
-<variable>      a list of variables on the library (see Section 10-4-1).
+    <name>  the name of the library.
+    <version>       the version of Electric that wrote the library.
+    <variable>      a list of variables on the library (see Section 10-4-1).
 
-The name of the library is used in the JELIB file to identify references to this library. The actual name of this library is obtained from the file path of this JELIB file.
-pass."""
+    The name of the library is used in the JELIB file to identify
+    references to this library. The actual name of this library is
+    obtained from the file path of this JELIB file.
+    """
+    pass
 
 
 

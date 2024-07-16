@@ -10,9 +10,10 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul 14, 2024  9:21 pm by Gary Delp v-0.1.20)
+#  (Last Emacs Update:  Mon Jul 15, 2024  7:49 pm by Gary Delp v-0.1.18)
 #
-# Sat Jul 13, 2024  9:51 pm by Gary Delp v-0.1.16:
+# Mon Jul 15, 2024  7:49 pm by Gary Delp v-0.1.18:
+#
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/base_classes.py
@@ -191,10 +192,6 @@ class ElecLine():
     the_readers: dict[str, Self] = {}
 
     @classmethod
-    def read_lines(cls,lib: str, source: IO[Any]):
-        pass
-
-    @classmethod
     def register_reader(cls, letter: str, reader: Self) -> None:
         """Register a Reader subclass for lines starting with a given letter."""
         cls.the_readers[letter] = reader
@@ -302,6 +299,12 @@ class Location():
         assert [0, 1] == cls.rot_deg_coef(90)
         assert [0, -1] == cls.rot_deg_coef(270)
         assert [-1, 0] == cls.rot_deg_coef(180)
+
+class ElecCellRef(ElecBase):
+    """Class for Cell References."""
+
+    def __init__(self, library:str, name:str, version:str = "") -> None:
+        super().__init__(library, name, version)
 
 class Parms():
     """Named Parms."""

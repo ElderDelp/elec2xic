@@ -32,9 +32,9 @@ G       Group information
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul 14, 2024  7:47 pm by Gary Delp v-0.1.6)
+#  (Last Emacs Update:  Mon Jul 15, 2024  7:56 pm by Gary Delp v-0.1.8)
 #
-# Sun Jul 14, 2024  7:47 pm by Gary Delp v-0.1.6:
+# Mon Jul 15, 2024  7:56 pm by Gary Delp v-0.1.8:
 #
 # Thu Jul 11, 2024  1:37 pm by Gary Delp v-0.1.4:
 #
@@ -43,8 +43,11 @@ G       Group information
 # Always start with all of the imports
 # Here is the start of: ELECDATA/elec_jelib.py
 from typing import Self, IO, Any
+from collections.abc import Generator
 from pathlib import Path
-from base_classes import ElecBase, ElecReadException, ElecLine, Parms, jelib_path
+from base_classes import (
+    ElecBase, ElecReadException, ElecLine, Parms,
+    jelib_path, elec_add_line_Parser)
 from collections import namedtuple
 
 LibRefInfo = namedtuple('LibRefInfo', ['name', 'filename', 'fromfile', 'line'])
@@ -119,12 +122,51 @@ class JeLIB(ElecBase):
         reading them in before continuing to the next line.
         """
         super().__init__(lib, name, version)
-        self.lines: dict[str,list[ElecBase]] = {}
-        self.cells: dict[str, ElecBase] = {}
-        self.called_from: list[LibRefInfo] = []
-        ElecLine.read_loop(self, source)
+        self.line_no: int = 0
+        self.source: IO[Any] = source
+        self.H_eader: list[ElecLine] = []
+        self.V_iew: list[ElecLine] = []
+        self.L_ibsibs: dict[str, ElecLine] = {}
+        self.R_Cells: list[ElecLine] = []
+        self.F_ext_cells: list[ElecLine] = []
+        self.T_ech: list[ElecLine] = []
+        self.O_tools: list[ElecLine] = []
+        self.C_ells: list[ElecLine] = []
+        self.G_roups: list[ElecLine] = []
+        self.read_loop()
+
+    def gline(self):
+        while ret := self.source.readline():
+            self.line_no +=1
+            if ret[0] in " #":
+                continue
+            else:
+                yield ret
 
 
+    def read_loop(self) -> None:
+        """Read the lines, keep track of line number, collect the cells."""
+        rline: str = str(self.gline())
+        ltype: str = rline[0]
+        if ltype != "H":
+            err_str = 'The source does not start with a header line:'
+            err_str += f"{self.line_no}: is '{rline}'"
+            raise ElecReadException(err_str)
+        while rline := str(self.gline()):
+
+
+@elec_add_line_Parser("H")
+class ElecLineH_eader(ElecLine):
+    """Hx<name> | <version> [ | <variable> ]*
+    <name>  the name of the library.
+    <version>       the version of Electric that wrote the library.
+    <variable>      a list of variables on the library (see Section 10-4-1).
+
+    The name of the library is used in the JELIB file to identify
+    references to this library. The actual name of this library is
+    obtained from the file path of this JELIB file.
+    """
+    pass
 
 
 
