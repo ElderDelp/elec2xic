@@ -10,7 +10,11 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul 16, 2024  5:41 pm by Gary Delp v-0.1.24)
+#  (Last Emacs Update:  Sun Jul 28, 2024 10:57 pm by Gary Delp v-0.1.26)
+#
+# Sun Jul 28, 2024 10:57 pm by Gary Delp v-0.1.26:
+#
+# Sat Jul 27, 2024  7:49 pm by Gary Delp v-0.1.26:
 #
 # Tue Jul 16, 2024  5:22 pm by Gary Delp v-0.1.20:
 #
@@ -23,7 +27,6 @@
 import functools
 import math
 from pathlib import Path
-from types import MethodDescriptorType
 from typing import Self, Any, IO, Final
 # from dataclasses import dataclass
 
@@ -212,6 +215,7 @@ class ElecLine():
         self.text = text
         self.container = container
         self.line_no = line_no
+        self.proc_line()
 
     def proc_line(self):
         pass
@@ -223,12 +227,12 @@ def elec_add_line_Parser(key:str):
     the_key: str = key
     def register(klass):
         nonlocal key
-        if isinstance(klass, type(ElecLine)):
-            klass.register_reader(the_key, type(klass))
+        if ElecLine in klass.__bases__:
+            klass.register_reader(the_key, klass)
         else:
             err_str = 'Tried to add a reader class that is not a subclass '
-            err_str += f'{type(ElecLine)=}, new class "{klass.__name__}" is '
-            err_str += f'{type(klass)=}'
+            err_str += f'ElecLine, new class "{klass.__name__}" is '
+            err_str += f'{klass.__bases__}'
             raise ElecReadException(err_str)
         return klass
     return register
@@ -273,7 +277,16 @@ class Location():
         return self
 
     def __eq__(self, other: Self) -> bool:
-        return self.x == other.x and self.y == other.y
+        if math.isclose(self.x, other.x, rel_tol=1e-9, abs_tol=1e-9):
+            if math.isclose(self.y, other.y, rel_tol=1e-9, abs_tol=1e-9):
+                return True
+        return False
+
+    def __ne__(self, other: Self) -> bool:
+        if math.isclose(self.x, other.x, rel_tol=1e-9, abs_tol=1e-9):
+            if math.isclose(self.y, other.y, rel_tol=1e-9, abs_tol=1e-9):
+                return False
+        return True
 
     def __neg__(self) -> Self:
         return type(self)(-self.x, -self.y)

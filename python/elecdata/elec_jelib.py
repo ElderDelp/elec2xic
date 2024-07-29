@@ -32,13 +32,22 @@ G       Group information
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul 16, 2024  5:41 pm by Gary Delp v-0.1.10)
+#  (Last Emacs Update:  Sun Jul 28, 2024 10:20 pm by Gary Delp v-0.1.14)
+#
+# Sun Jul 28, 2024 10:20 pm by Gary Delp v-0.1.14:
+#
+# Mon Jul 22, 2024 10:51 pm by Gary Delp v-0.1.14:
+#
+# Sun Jul 21, 2024  9:33 pm by Gary Delp v-0.1.14:
+#
+# Fri Jul 19, 2024  8:09 pm by Gary Delp v-0.1.12:
 #
 # Mon Jul 15, 2024  9:03 pm by Gary Delp v-0.1.8:
 #
 # --------------------------------------------------------------------
 # Always start with all of the imports
 # Here is the start of: ELECDATA/elec_jelib.py
+import re
 from typing import Self, IO, Any
 from pathlib import Path
 from base_classes import (
@@ -112,7 +121,7 @@ class JeLIB(ElecBase):
             err_str = f"ElecReadException: '{filename}' does not exist."
             err_str += cls.stack_str(name, filename, line_no, i)
             raise ElecReadException(err_str)
-        cls.stack_str.append(
+        cls.lib_call_stack.append(
             LibRefInfo(name, filename, cls.lib_call_stack[-1].fromfile, line_no))
         with filep.open(filename) as lib_fp:
             ret = cls(lib=name, name="libRoot",
@@ -136,28 +145,35 @@ class JeLIB(ElecBase):
     def gline(self):
         while ret := self.source.readline():
             self.line_no +=1
-            if ret[0] in " #":
+            if ret[0] in " #\n":
                 continue
             else:
-                yield ret
+                yield re.sub(r'(\S)\s*\Z', '', ret, flags=re.MULTILINE)
 
     def read_loop(self) -> None:
         """Read the lines, keep track of line number, collect the cells."""
-        rline: str = str(self.gline())
-        ltype: str = rline[0]
-        if ltype != "H":
-            err_str = 'The source does not start with a header line:'
-            err_str += f"{self.line_no}: is '{rline}'"
-            raise ElecReadException(err_str)
-        self.eline_cp.reader_d['H'](rline, self, self.line_no)
-        while rline := str(self.gline()):
-            ltype = rline[0]
-
+        need_header: bool = True
+        for rline in  self.gline():
+            rline = str(rline)
+            ltype: str = rline[0]
+            if need_header:
+                # Header is first non-blank non-comment line
+                need_header = False
+                if ltype != "H":
+                    err_str = 'The source does not start with a header line:'
+                    err_str += f"{self.line_no}: is '{rline}'"
+                    raise ElecReadException(err_str)
+                klass = self.el_d['H']
+                klass(rline, self, self.line_no)
+            elif ltype == 'C':
+                # Process a cell
+                for rline in self.gline():
+                    ltype = rline[0]
 
 
 @elec_add_line_Parser("H")
 class ElecLineH_eader(ElecLine):
-    """Hx<name> | <version> [ | <variable> ]*
+    """H<name> | <version> [ | <variable> ]*
     <name>  the name of the library.
     <version>       the version of Electric that wrote the library.
     <variable>      a list of variables on the library (see Section 10-4-1).
@@ -167,7 +183,25 @@ class ElecLineH_eader(ElecLine):
     obtained from the file path of this JELIB file.
     """
     def proc_line(self):
-        pass
+        err_str: str = ''
+        if isinstance(self.container, JeLIB):
+            jel = self.container
+            elist = self.text[1:].split("|")
+            if len(elist) < 2:
+                err_str = f'The .jelib Header "{self.text}" is too short.'
+                err_str += f", line:{self.line_no}"
+                raise ElecReadException(err_str)
+            if jel.name_db['library'][0] != elist[0]:
+                err_str = f'The .jelib Header name line "H{elist[0]}|{elist[1]}"'
+                err_str += f'does not match file basename {jel.name_db['lib'][0]}'
+                err_str += f", line:{self.line_no}"
+                raise ElecReadException(err_str)
+            if '9.08e' != elist [1]:
+                err_str = 'The .jelib file does not use version 9.08e, rather'
+                err_str += f' "{elist[1]}", line:{self.line_no}'
+                raise ElecReadException(err_str)
+
+
 
 
 

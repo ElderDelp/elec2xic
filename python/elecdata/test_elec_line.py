@@ -11,7 +11,11 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Tue Jul 16, 2024  5:45 pm by Gary Delp v-0.1.12)
+#  (Last Emacs Update:  Sun Jul 28, 2024 10:58 pm by Gary Delp v-0.1.26)
+#
+# Sun Jul 28, 2024  9:58 pm by Gary Delp v-0.1.20:
+#
+# Sun Jul 21, 2024  9:39 pm by Gary Delp v-0.1.18:
 #
 # Sat Jul 13, 2024 10:09 pm by Gary Delp v-0.1.4:
 # --------------------------------------------------------------------
@@ -100,23 +104,81 @@ X
     def test_elec_line_class(self):
         """The class is an instance of itself.
         """
-
         self.assertIsInstance(
             ElecLine(
                 "CAGallery;1{sch}||schematic|1604239895796|1681918119906|E",
                 container=ElecBase.ElecNone), ElecLine)
-    def test_jelib_read_loop_fail(self):
+
+    def test_jelib_read_header_fail1(self):
         """Does JeLIB fail if input does not start with an H line."""
         inp = StringIO("#\nAGallery\n")
         def err() -> JeLIB:
             nonlocal inp
-            return JeLIB(inp, "err", "should", "fail")
+            return JeLIB(inp, "err", "should", "fail1")
 
         self.assertRaises(ElecReadException, err)
 
+    def test_jelib_read_header_fail2(self):
+        """Does JeLIB fail if intial H line does not have name or version."""
+        inp = StringIO("H\n")
+        def err() -> JeLIB:
+            nonlocal inp
+            return JeLIB(inp, "err", "should", "fail2")
+
+        self.assertRaises(ElecReadException, err)
+
+    def test_jelib_read_header_fail3(self):
+        """Does JeLIB with non-matching name?"""
+        inp = StringIO("Herr2|9.08e\n")
+        def err() -> JeLIB:
+            nonlocal inp
+            return JeLIB(inp, "err", "should", "fail3")
+
+        self.assertRaises(ElecReadException, err)
+
+    def test_jelib_read_header_pass3(self):
+        """Does JeLIB pass with a correct H line."""
+        inp = StringIO("Herr|9.08e\n")
+        def err() -> JeLIB:
+            nonlocal inp
+            return JeLIB(inp, "err", "should", "pass3")
+
+        self.assertIsInstance(err(), ElecLine)
+
+    def test_jelib_read_header_fail4(self):
+        """Does JeLIB fail if H line has the wrong version."""
+        inp = StringIO("Herr|8.50c\n")
+        def err() -> JeLIB:
+            nonlocal inp
+            return JeLIB(inp, "err", "should", "fail4")
+
+        self.assertRaises(ElecReadException, err)
+
+    def test_jelib_read_header_fail5(self):
+        """Does JeLIB fail if input does not start with an H line."""
+        inp = StringIO("Herr|9.08e|||\n")
+        def err() -> JeLIB:
+            nonlocal inp
+            return JeLIB(inp, "err", "should", "fail5")
+        self.assertRaises(ElecReadException, err)
+
+    # def test_jelib_read_header_fail6(self):
+    #     """Does JeLIB fail if input does not start with an H line."""
+    #     inp = StringIO("Herr|8.50c\n")
+    #     def err() -> JeLIB:
+    #         nonlocal inp
+    #         return JeLIB(inp, "err", "should", "fail6")
+    #     self.assertRaises(ElecReadException, err)
+
+
+    def test_jelib_read_components(self):
+        """Will JELib detect views."""
+        lib = JeLIB(StringIO(self.jelib_lines), 'conductors', 'jelib_read_1', '1')
+        self.assertEqual(lib.line_no, 67)
+
 # --------------------------------------------------------------------
 # Local Variables:
-# compile-command: "python -m unittest"
+# compile-command: "python -m unittest --verbose"
 # End:
 # --------------------------------------------------------------------
 # test_elec_line.py ends here.

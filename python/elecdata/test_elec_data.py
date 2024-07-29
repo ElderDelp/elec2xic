@@ -11,7 +11,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul 15, 2024  9:18 pm by Gary Delp v-0.1.56)
+#  (Last Emacs Update:  Sun Jul 28, 2024 10:27 pm by Gary Delp v-0.1.56)
+#
+# Sun Jul 28, 2024 10:27 pm by Gary Delp v-0.1.56:
 #
 # Mon Jul 15, 2024  9:18 pm by Gary Delp v-0.1.56:
 #     Tests pass this version
@@ -233,7 +235,7 @@ class TestLocation(unittest.TestCase):
         result: list[Location] = []
         scale = Location(1, 1)
         for a in self.component_points:
-            self.assertEqual(a, a*scale)
+            self.assertTrue(a == a*scale)
         for a in self.component_points:
             result.append(a)
         self.assertEqual(result, self.component_points)
