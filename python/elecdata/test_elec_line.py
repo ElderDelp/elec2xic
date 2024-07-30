@@ -11,7 +11,7 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul 28, 2024 10:58 pm by Gary Delp v-0.1.26)
+#  (Last Emacs Update:  Mon Jul 29, 2024  8:34 pm by Gary Delp v-0.1.30)
 #
 # Sun Jul 28, 2024  9:58 pm by Gary Delp v-0.1.20:
 #
@@ -143,7 +143,7 @@ X
             nonlocal inp
             return JeLIB(inp, "err", "should", "pass3")
 
-        self.assertIsInstance(err(), ElecLine)
+        self.assertIsInstance(err(), ElecBase)
 
     def test_jelib_read_header_fail4(self):
         """Does JeLIB fail if H line has the wrong version."""
@@ -159,7 +159,7 @@ X
         inp = StringIO("Herr|9.08e|||\n")
         def err() -> JeLIB:
             nonlocal inp
-            return JeLIB(inp, "err", "should", "fail5")
+            return JeLIB(inp, "err5", "should", "fail5")
         self.assertRaises(ElecReadException, err)
 
     # def test_jelib_read_header_fail6(self):

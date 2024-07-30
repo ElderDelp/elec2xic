@@ -10,7 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul 28, 2024 10:57 pm by Gary Delp v-0.1.26)
+#  (Last Emacs Update:  Mon Jul 29, 2024  9:44 pm by Gary Delp v-0.1.26)
+#
+# Mon Jul 29, 2024  9:44 pm by Gary Delp v-0.1.26:
 #
 # Sun Jul 28, 2024 10:57 pm by Gary Delp v-0.1.26:
 #
@@ -242,7 +244,9 @@ def elec_add_line_Parser(key:str):
 class Location():
     """Holds (X, Y)."""
 
+    dummy: Any = None
     small: Final[float] = math.ldexp(0.5, -24)
+    this_class: type = dummy
 
     def __init__(self, x: float, y: float) -> None:
         self.x: float = x
@@ -261,6 +265,9 @@ class Location():
     def __mul__(self, other: Self) -> Self:
         return type(self)(self.x * other.x, self.y * other.y)
 
+    def __truediv__(self, other: Self) -> Self:
+        return type(self)(self.x / other.x, self.y / other.y)
+
     def __iadd__(self, other: Self) -> Self:
         self.x += other.x
         self.y += other.y
@@ -276,17 +283,13 @@ class Location():
         self.y *= other.y
         return self
 
-    def __eq__(self, other: Self) -> bool:
-        if math.isclose(self.x, other.x, rel_tol=1e-9, abs_tol=1e-9):
-            if math.isclose(self.y, other.y, rel_tol=1e-9, abs_tol=1e-9):
-                return True
-        return False
-
-    def __ne__(self, other: Self) -> bool:
-        if math.isclose(self.x, other.x, rel_tol=1e-9, abs_tol=1e-9):
-            if math.isclose(self.y, other.y, rel_tol=1e-9, abs_tol=1e-9):
-                return False
-        return True
+    def __eq__(self, other) -> bool:
+        if isinstance(other, self.__class__):
+            if math.isclose(self.x, other.x, rel_tol=1e-9, abs_tol=1e-9):
+                if math.isclose(self.y, other.y, rel_tol=1e-9, abs_tol=1e-9):
+                    return True
+            return False
+        return NotImplemented
 
     def __neg__(self) -> Self:
         return type(self)(-self.x, -self.y)
@@ -327,11 +330,13 @@ class Location():
     @classmethod
     def cls_init(cls) -> None:
         """Allocate the class constant instance: ElecNone."""
+        cls.this_class = cls
         assert [1, 0] == cls.rot_deg_coef(0)
         assert [1, 0] == cls.rot_deg_coef(360)
         assert [0, 1] == cls.rot_deg_coef(90)
         assert [0, -1] == cls.rot_deg_coef(270)
         assert [-1, 0] == cls.rot_deg_coef(180)
+
 
 class ElecCellRef(ElecBase):
     """Class for Cell References."""

@@ -32,7 +32,9 @@ G       Group information
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul 28, 2024 10:20 pm by Gary Delp v-0.1.14)
+#  (Last Emacs Update:  Mon Jul 29, 2024  9:56 pm by Gary Delp v-0.1.14)
+#
+# Mon Jul 29, 2024  9:56 pm by Gary Delp v-0.1.14:
 #
 # Sun Jul 28, 2024 10:20 pm by Gary Delp v-0.1.14:
 #
@@ -148,7 +150,7 @@ class JeLIB(ElecBase):
             if ret[0] in " #\n":
                 continue
             else:
-                yield re.sub(r'(\S)\s*\Z', '', ret, flags=re.MULTILINE)
+                yield re.sub(r'(\S)\s*\Z', r'\1', ret, flags=re.MULTILINE)
 
     def read_loop(self) -> None:
         """Read the lines, keep track of line number, collect the cells."""
@@ -164,6 +166,9 @@ class JeLIB(ElecBase):
                     err_str += f"{self.line_no}: is '{rline}'"
                     raise ElecReadException(err_str)
                 klass = self.el_d['H']
+                klass(rline, self, self.line_no)
+            elif ltype in 'VOL':
+                klass = self.el_d[ltype]
                 klass(rline, self, self.line_no)
             elif ltype == 'C':
                 # Process a cell
@@ -193,7 +198,8 @@ class ElecLineH_eader(ElecLine):
                 raise ElecReadException(err_str)
             if jel.name_db['library'][0] != elist[0]:
                 err_str = f'The .jelib Header name line "H{elist[0]}|{elist[1]}"'
-                err_str += f'does not match file basename {jel.name_db['lib'][0]}'
+                err_str += 'does not match file basename '
+                err_str += f"{jel.name_db['library'][0]}"
                 err_str += f", line:{self.line_no}"
                 raise ElecReadException(err_str)
             if '9.08e' != elist [1]:
@@ -202,6 +208,59 @@ class ElecLineH_eader(ElecLine):
                 raise ElecReadException(err_str)
 
 
+@elec_add_line_Parser("V")
+class ElecLineH_eader(ElecLine):
+    """Views
+
+    All views used in the library must be declared.
+
+    V<full name> | <name>
+    <full name> the full name of the view.
+    <name>      the abbreviation name of the view."""
+    def proc_line(self):
+        err_str: str = ''
+        if isinstance(self.container, JeLIB):
+            jel = self.container
+            elist = self.text[1:].split("|")
+
+@elec_add_line_Parser("O")
+class ElecLineH_eader(ElecLine):
+    """Views
+
+    All views used in the library must be declared.
+
+    V<full name> | <name>
+    <full name> the full name of the view.
+    <name>      the abbreviation name of the view."""
+    def proc_line(self):
+        err_str: str = ''
+        if isinstance(self.container, JeLIB):
+            jel = self.container
+            elist = self.text[1:].split("|")
+
+@elec_add_line_Parser("L")
+class ElecLineH_eader(ElecLine):
+    """After the header line, all external libraries cells and exports must be declared. This allows the file reader to quickly find all libraries that will be needed for the design, and to reconstruct any missing cells and exports. The cells are listed under their libraries. The exports are listed under their cells. If there are multiple external library lines, they are sorted by library name; where there are multiple external cells in a library, they are sorted by their name; and where there are multiple external exports in a cell, they are sorted by their name.
+
+The syntax of an external library reference is:
+
+L<name> | <path>
+<name>  the name of the external library.
+<path>  the full path to the disk file with the library.
+
+The name of the library is used in JELIB file to references to this library. The actual name of this library is obtained from the path.
+Views
+
+    All views used in the library must be declared.
+
+    V<full name> | <name>
+    <full name> the full name of the view.
+    <name>      the abbreviation name of the view."""
+    def proc_line(self):
+        err_str: str = ''
+        if isinstance(self.container, JeLIB):
+            jel = self.container
+            elist = self.text[1:].split("|")
 
 
 
