@@ -32,19 +32,9 @@ G       Group information
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul 29, 2024  9:56 pm by Gary Delp v-0.1.14)
+#  (Last Emacs Update:  Wed Jul 31, 2024 10:43 pm by Gary Delp v-0.1.16)
 #
-# Mon Jul 29, 2024  9:56 pm by Gary Delp v-0.1.14:
-#
-# Sun Jul 28, 2024 10:20 pm by Gary Delp v-0.1.14:
-#
-# Mon Jul 22, 2024 10:51 pm by Gary Delp v-0.1.14:
-#
-# Sun Jul 21, 2024  9:33 pm by Gary Delp v-0.1.14:
-#
-# Fri Jul 19, 2024  8:09 pm by Gary Delp v-0.1.12:
-#
-# Mon Jul 15, 2024  9:03 pm by Gary Delp v-0.1.8:
+# Wed Jul 31, 2024  8:22 pm by Gary Delp v-0.1.14:
 #
 # --------------------------------------------------------------------
 # Always start with all of the imports
@@ -80,7 +70,8 @@ class JeLIB(ElecBase):
     el_d = eline_cp.reader_d
 
     @classmethod
-    def stack_str(cls, name: str, filename: str, line_no: int, mark: int = -1) -> str:
+    def stack_str(cls, name: str, filename: str, line_no: int,
+                  mark: int = -1) -> str:
         """Return a string representing the cls.lib_call_stack"""
         j = 0
         ret_str = f"{cls.__name__}.lib_call_stack:\n"
@@ -98,7 +89,7 @@ class JeLIB(ElecBase):
     def read_lib(cls, name: str, filename:str, line_no: int) -> Self:
         """Check the name (has it or is it been/being loaded?) raising
         ElecReadException on a loop. If all OK returns a read instance.
-        name: str: the name of the library to read
+        name: str: the name of the library to read.
         """
         i = -1
         # If already read, then just return the instance
@@ -106,7 +97,6 @@ class JeLIB(ElecBase):
             ret = cls.libs_read[name]
             caller = cls.lib_call_stack[-1]
             ret.called_from.append(caller)
-
         # check for a read loop
         # lib A reads lib B which reads lib C which comes back and reads lib A
         this_read = (name, filename)
@@ -116,7 +106,6 @@ class JeLIB(ElecBase):
                 err_str = f"ElecReadException: opening '{filename}' "
                 err_str += cls.stack_str(name, filename, line_no, i)
                 raise ElecReadException(err_str)
-
         # check file exists
         filep = Path(filename)
         if not filep.exists:
@@ -131,7 +120,6 @@ class JeLIB(ElecBase):
         cls.lib_call_stack.pop()
         return ret
 
-
     def __init__(self, source: IO[Any], lib: str, name:str, version:str) -> None:
         """Read line by line, pushing into other libraries referenced,
         reading them in before continuing to the next line.
@@ -139,7 +127,9 @@ class JeLIB(ElecBase):
         super().__init__(lib, name, version)
         self.line_no: int = 0
         self.source: IO[Any] = source
-        self.L_ibsibs: dict[str, ElecLine] = {}
+        self.view_dict: dict[str, str] = {}
+        self.lib_dict: dict[str, Self] = {}
+        self.tools_d: dict[str, list[Parms]] = {}
         self.called_from: list[LibRefInfo] = []
         self.cells: list[ElecCellBody] = []
         self.read_loop()
@@ -209,7 +199,7 @@ class ElecLineH_eader(ElecLine):
 
 
 @elec_add_line_Parser("V")
-class ElecLineH_eader(ElecLine):
+class ElecLineV_iew(ElecLine):
     """Views
 
     All views used in the library must be declared.
@@ -218,49 +208,69 @@ class ElecLineH_eader(ElecLine):
     <full name> the full name of the view.
     <name>      the abbreviation name of the view."""
     def proc_line(self):
-        err_str: str = ''
         if isinstance(self.container, JeLIB):
-            jel = self.container
+            jel: JeLIB = self.container
             elist = self.text[1:].split("|")
+            jel.view_dict[elist[1]] = elist[0]
+
 
 @elec_add_line_Parser("O")
-class ElecLineH_eader(ElecLine):
-    """Views
+class ElecLineO_tool(ElecLine):
+    """Tools
 
-    All views used in the library must be declared.
+    There is no need to declare all tools in the header. The only
+    reason for a tool declaration to exist is if the tool has project
+    setting variables stored on it. If there are multiple tool lines,
+    they are sorted by the tool name. The syntax is:
 
-    V<full name> | <name>
-    <full name> the full name of the view.
-    <name>      the abbreviation name of the view."""
+    O<name> [ | <variable> ]*
+    <name>      the name of the tool.
+    <variable>  a list of preferences on the tool (stored as variables, see Section 10-4-1).
+
+    Example:
+
+    Ologeffort|GlobalFanout()D12.0
+    Declares a project setting on the "Logical Effort" tool object. The
+    "GlobalFanout" is set to the floating point value 12.
+    """
     def proc_line(self):
         err_str: str = ''
         if isinstance(self.container, JeLIB):
-            jel = self.container
+            jel: JeLIB = self.container
             elist = self.text[1:].split("|")
+            for p in elist[1:]:
+
+
 
 @elec_add_line_Parser("L")
-class ElecLineH_eader(ElecLine):
-    """After the header line, all external libraries cells and exports must be declared. This allows the file reader to quickly find all libraries that will be needed for the design, and to reconstruct any missing cells and exports. The cells are listed under their libraries. The exports are listed under their cells. If there are multiple external library lines, they are sorted by library name; where there are multiple external cells in a library, they are sorted by their name; and where there are multiple external exports in a cell, they are sorted by their name.
+class ElecLineL_ibrary(ElecLine):
+    """After the header line, all external libraries cells and exports
+    must be declared. This allows the file reader to quickly find all
+    libraries that will be needed for the design, and to reconstruct
+    any missing cells and exports. The cells are listed under their
+    libraries. The exports are listed under their cells. If there are
+    multiple external library lines, they are sorted by library name;
+    where there are multiple external cells in a library, they are
+    sorted by their name; and where there are multiple external
+    exports in a cell, they are sorted by their name.
 
-The syntax of an external library reference is:
+    The syntax of an external library reference is:
 
-L<name> | <path>
-<name>  the name of the external library.
-<path>  the full path to the disk file with the library.
+    L<name> | <path>
+    <name>  the name of the external library.
+    <path>  the full path to the disk file with the library.
 
-The name of the library is used in JELIB file to references to this library. The actual name of this library is obtained from the path.
-Views
+    The name of the library is used in JELIB file to references to
+    this library. The actual name of this library is obtained from the
+    path."""
 
-    All views used in the library must be declared.
-
-    V<full name> | <name>
-    <full name> the full name of the view.
-    <name>      the abbreviation name of the view."""
     def proc_line(self):
-        err_str: str = ''
+        # err_str: str = ''
         if isinstance(self.container, JeLIB):
-            jel = self.container
+            jel: JeLIB = self.container
             elist = self.text[1:].split("|")
+            jel.lib_dict[elist[0]]  = jel.read_lib(
+                elist[0], elist[1], self.line_no)
 
 
 
