@@ -10,7 +10,7 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Jul 29, 2024  9:44 pm by Gary Delp v-0.1.26)
+#  (Last Emacs Update:  Thu Aug  1, 2024  8:43 pm by Gary Delp v-0.1.28)
 #
 # Mon Jul 29, 2024  9:44 pm by Gary Delp v-0.1.26:
 #
@@ -217,6 +217,7 @@ class ElecLine():
         self.text = text
         self.container = container
         self.line_no = line_no
+
         self.proc_line()
 
     def proc_line(self):
@@ -368,9 +369,10 @@ class Parms():
             cls.symbols[name].append(inst)
         return cls.symbols[name]
 
-    def __init__(self, name: str, val:Any, descr: str = "") -> None:
+    def __init__(self, name: str, val:Any, mod:str, descr: str = "") -> None:
         self.name = name
         self.val = val
+        self.mod = mod
         self.descr = descr
         self.add_symb(self)
 

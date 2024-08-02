@@ -11,7 +11,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Jul 28, 2024 10:27 pm by Gary Delp v-0.1.56)
+#  (Last Emacs Update:  Thu Aug  1, 2024  8:43 pm by Gary Delp v-0.1.56)
+#
+# Thu Aug  1, 2024  8:43 pm by Gary Delp v-0.1.56:
 #
 # Sun Jul 28, 2024 10:27 pm by Gary Delp v-0.1.56:
 #
@@ -151,7 +153,7 @@ class TestParms(unittest.TestCase):
 
     def test_elec_parms_class(self):
         """The class is an instance of itself."""
-        check = Parms("Lik", 1)
+        check = Parms("Lik", '', '1')
         print(f'{type(check)} {check=}')
         self.assertIsInstance(check, cls=Parms)
 

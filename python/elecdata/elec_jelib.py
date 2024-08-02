@@ -32,7 +32,9 @@ G       Group information
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Wed Jul 31, 2024 10:43 pm by Gary Delp v-0.1.16)
+#  (Last Emacs Update:  Thu Aug  1, 2024  8:43 pm by Gary Delp v-0.1.16)
+#
+# Thu Aug  1, 2024  8:43 pm by Gary Delp v-0.1.16:
 #
 # Wed Jul 31, 2024  8:22 pm by Gary Delp v-0.1.14:
 #
@@ -127,8 +129,8 @@ class JeLIB(ElecBase):
         super().__init__(lib, name, version)
         self.line_no: int = 0
         self.source: IO[Any] = source
-        self.view_dict: dict[str, str] = {}
-        self.lib_dict: dict[str, Self] = {}
+        self.view_d: dict[str, str] = {}
+        self.lib_d: dict[str, Self] = {}
         self.tools_d: dict[str, list[Parms]] = {}
         self.called_from: list[LibRefInfo] = []
         self.cells: list[ElecCellBody] = []
@@ -211,8 +213,12 @@ class ElecLineV_iew(ElecLine):
         if isinstance(self.container, JeLIB):
             jel: JeLIB = self.container
             elist = self.text[1:].split("|")
-            jel.view_dict[elist[1]] = elist[0]
+            jel.view_d[elist[1]] = elist[0]
 
+
+@elec_add_line_Parser("T")
+class ElecLineT_echnology(ElecLine):
+    pass
 
 @elec_add_line_Parser("O")
 class ElecLineO_tool(ElecLine):
@@ -234,12 +240,16 @@ class ElecLineO_tool(ElecLine):
     "GlobalFanout" is set to the floating point value 12.
     """
     def proc_line(self):
-        err_str: str = ''
+        # err_str: str = ''
         if isinstance(self.container, JeLIB):
             jel: JeLIB = self.container
             elist = self.text[1:].split("|")
+            plist: list[Parms] = []
             for p in elist[1:]:
-
+                if m := re.match(r'\A([^(]+)\(([^)]*)\)(.*)\Z',p):
+                    plist.append(
+                        Parms(*m.group(1, 2, 3)))
+            jel.tools_d['elist[0]'] = plist
 
 
 @elec_add_line_Parser("L")
@@ -269,7 +279,7 @@ class ElecLineL_ibrary(ElecLine):
         if isinstance(self.container, JeLIB):
             jel: JeLIB = self.container
             elist = self.text[1:].split("|")
-            jel.lib_dict[elist[0]]  = jel.read_lib(
+            jel.lib_d[elist[0]]  = jel.read_lib(
                 elist[0], elist[1], self.line_no)
 
 
