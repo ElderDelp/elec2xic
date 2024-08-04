@@ -32,7 +32,11 @@ G       Group information
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Aug  1, 2024  8:43 pm by Gary Delp v-0.1.16)
+#  (Last Emacs Update:  Sat Aug  3, 2024 10:49 pm by Gary Delp v-0.1.16)
+#
+# Sat Aug  3, 2024 10:49 pm by Gary Delp v-0.1.16:
+#
+# Fri Aug  2, 2024  9:53 pm by Gary Delp v-0.1.16:
 #
 # Thu Aug  1, 2024  8:43 pm by Gary Delp v-0.1.16:
 #
@@ -46,7 +50,7 @@ from typing import Self, IO, Any
 from pathlib import Path
 from base_classes import (
     ElecBase, ElecReadException, ElecLine, Parms,
-    jelib_path, elec_add_line_Parser
+    elec_add_line_Parser
 )
 from collections import namedtuple
 
@@ -65,11 +69,6 @@ class JeLIB(ElecBase):
     # (name, filename, fromfile, line_no)
     lib_call_stack: list[LibRefInfo] = [
         LibRefInfo('base', 'stdin', '', 0)]
-
-    eline_cp = ElecLine(
-        'sr', ElecBase(
-            library='dispatch-table', name='blank', version=''))
-    el_d = eline_cp.reader_d
 
     @classmethod
     def stack_str(cls, name: str, filename: str, line_no: int,
@@ -147,9 +146,13 @@ class JeLIB(ElecBase):
     def read_loop(self) -> None:
         """Read the lines, keep track of line number, collect the cells."""
         need_header: bool = True
+        in_cell: bool = False
+        dummy: Any = None
+        cur_cell: ElecCellBody = dummy
         for rline in  self.gline():
             rline = str(rline)
             ltype: str = rline[0]
+            klass = ElecLine.get_reader(ltype)
             if need_header:
                 # Header is first non-blank non-comment line
                 need_header = False
@@ -157,15 +160,36 @@ class JeLIB(ElecBase):
                     err_str = 'The source does not start with a header line:'
                     err_str += f"{self.line_no}: is '{rline}'"
                     raise ElecReadException(err_str)
-                klass = self.el_d['H']
                 klass(rline, self, self.line_no)
-            elif ltype in 'VOL':
-                klass = self.el_d[ltype]
-                klass(rline, self, self.line_no)
+            elif in_cell:
+                if ltype in "NIAE":
+                    klass(rline, cur_cell, self.line_no)
+                elif ltype not in "X":
+                    err_str = f"{self.name_db['version'][0]}:{self.line_no}:"
+                    err_str += f', *error* unknown cell line prefix "{ltype}", '
+                    err_str += rline
+                    raise ElecReadException(err_str)
+                else:
+                    in_cell = False
             elif ltype == 'C':
                 # Process a cell
-                for rline in self.gline():
-                    ltype = rline[0]
+                in_cell = True
+                cur_cell = klass(rline, self, self.line_no)
+            elif ltype in 'VOLT':
+                klass(rline, self, self.line_no)
+            else:
+                err_str = f"{self.name_db['version'][0]}:{self.line_no}:"
+                err_str += f', *error* unknown ex-cell line prefix "{ltype}", '
+                err_str += rline
+                raise ElecReadException(err_str)
+
+    def morph_fn(self, new_lib: str) -> str:
+        """Relative to the current jelib, use NEW_LIB to return full filename."""
+        ret = re.sub(
+            pattern=self.name_db['name'][0] + r'\.jelib\Z',
+            repl=new_lib + ".jelib",
+            string=self.name_db['version'][0])
+        return ret
 
 
 @elec_add_line_Parser("H")
@@ -218,6 +242,7 @@ class ElecLineV_iew(ElecLine):
 
 @elec_add_line_Parser("T")
 class ElecLineT_echnology(ElecLine):
+    """Process a technology line.  Not currently implemented."""
     pass
 
 @elec_add_line_Parser("O")

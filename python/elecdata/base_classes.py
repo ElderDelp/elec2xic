@@ -10,17 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Aug  1, 2024  8:43 pm by Gary Delp v-0.1.28)
+#  (Last Emacs Update:  Sat Aug  3, 2024  9:56 pm by Gary Delp v-0.1.28)
 #
-# Mon Jul 29, 2024  9:44 pm by Gary Delp v-0.1.26:
-#
-# Sun Jul 28, 2024 10:57 pm by Gary Delp v-0.1.26:
-#
-# Sat Jul 27, 2024  7:49 pm by Gary Delp v-0.1.26:
-#
-# Tue Jul 16, 2024  5:22 pm by Gary Delp v-0.1.20:
-#
-# Mon Jul 15, 2024  8:39 pm by Gary Delp v-0.1.18:
+# Sat Aug  3, 2024  9:56 pm by Gary Delp v-0.1.28:
 #
 # --------------------------------------------------------------------
 # Always start with all of the imports
@@ -29,7 +21,7 @@
 import functools
 import math
 from pathlib import Path
-from typing import Self, Any, IO, Final
+from typing import Self, Any, Final
 # from dataclasses import dataclass
 
 import re
@@ -44,7 +36,7 @@ def gsd_init_class(klass):
     klass.cls_init()
     return klass
 
-### ------------------------------------------------------------------
+######################################################################
 ## Decorator def moved to below class ElecLine declaration
 # def elec_add_line_Parser(key:str):
 #     """A decorator for subclasses of ElecLine to let them register for
