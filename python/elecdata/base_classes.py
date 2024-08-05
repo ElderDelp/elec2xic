@@ -10,7 +10,9 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sat Aug  3, 2024  9:56 pm by Gary Delp v-0.1.28)
+#  (Last Emacs Update:  Sun Aug  4, 2024  6:38 pm by Gary Delp v-0.1.30)
+#
+# Sun Aug  4, 2024  6:38 pm by Gary Delp v-0.1.30:
 #
 # Sat Aug  3, 2024  9:56 pm by Gary Delp v-0.1.28:
 #
@@ -231,6 +233,25 @@ def elec_add_line_Parser(key:str):
             raise ElecReadException(err_str)
         return klass
     return register
+
+
+class ElecCell(ElecBase):
+    """Class for Cell Bodies.  After the header information, each cell
+    is described. A cell consists of a cell declaration ("C") followed
+    by a number of node ("N"), instance ("I"), arc ("A"), and export
+    ("E") lines. The cell is terminated with a cell-end line
+    ("X"). Inside of a cell, all nodes come first and are sorted by
+    the node name; arcs come next and are sorted by the arc name;
+    finally come exports, sorted by the export name.
+    """
+
+    def __init__(self, library:str, name:str, version:str = "") -> None:
+        super().__init__(library, name, version)
+        self.parm: list[Parms]= []
+        self.nodes: list[ElecLine] = []
+        self.inst: list[ElecLine] = []
+        self.arcs: list[ElecLine] = []
+        self.xport: list[ElecLine] = []
 
 
 @gsd_init_class

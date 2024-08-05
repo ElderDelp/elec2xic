@@ -32,7 +32,7 @@ G       Group information
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sat Aug  3, 2024 10:49 pm by Gary Delp v-0.1.16)
+#  (Last Emacs Update:  Sun Aug  4, 2024  5:47 pm by Gary Delp v-0.1.18)
 #
 # Sat Aug  3, 2024 10:49 pm by Gary Delp v-0.1.16:
 #
@@ -174,7 +174,8 @@ class JeLIB(ElecBase):
             elif ltype == 'C':
                 # Process a cell
                 in_cell = True
-                cur_cell = klass(rline, self, self.line_no)
+                klass(rline, self, self.line_no)
+                cur_cell = self.cells[-1]
             elif ltype in 'VOLT':
                 klass(rline, self, self.line_no)
             else:
