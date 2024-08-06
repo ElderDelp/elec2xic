@@ -10,7 +10,9 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Aug  4, 2024  6:42 pm by Gary Delp v-0.1.22)
+#  (Last Emacs Update:  Mon Aug  5, 2024  8:54 pm by Gary Delp v-0.1.22)
+#
+# Mon Aug  5, 2024  8:54 pm by Gary Delp v-0.1.22:
 #
 # Sun Aug  4, 2024  6:42 pm by Gary Delp v-0.1.22:
 #
@@ -109,12 +111,54 @@ class ElecLineC_ell(ElecLine):
 
 @elec_add_line_Parser("N")
 class ElecLineN_ode(ElecLine):
+    """Inside of a cell definition, node instances are declared with
+    the "N" and "I" lines. "N" is for primitive nodes and "I" is for
+    cell instances. All nodes are sorted by the node name. The syntax
+    is:
 
+    N<type> | <name> | <nameTD> | <x> | <y> | <width> | <height>
+        | <orientation> | <flags> [ | <variable> ]*
+    I<type> | <name> | <nameTD> | <x> | <y>
+        | <orientation> | <flags> | <TD> [ | <variable> ]*
+    <type>      the type of the node instance. For primitive node instances,
+     this has the form: [<technology>:]<primitive-node>.
+     If <technology> is omitted, the technology of the cell is assumed.
+     For cell instances, it has the form: [<library>:]<cell>;<version>{<view>}.
+     If <library> is omitted, the library defined by this JELIB file is assumed.
+    <name>      the name of the node instance.
+    <nameTD>    a text descriptor for the name (when displayed).
+    <x> the X coordinate of the anchor point of the node instance.
+    <y> the Y coordinate of the anchor point of the node instance.
+    <width>     the difference between width of the primitive node and the
+    standard width of this primitive
+    <height>    the difference between height of the primitive node and the standard height of this primitive
+    <orientation>       the orientation of the node (see below).
+    <flags>     flags for the node instance (see below).
+    <TD>        a text descriptor for the cell instance name (does not apply to primitives).
+<variable>      a list of variables on the node instance (see Section 10-4-1).
+
+The <orientation> field is any of the following letters, followed by an optional numeric part:
+
+"X" if the node instance is X-mirrored (mirrored about Y axis).
+"Y" if the node instance is Y-mirrored (mirrored about X axis).
+"R" each letter rotates the node instance at 90 degrees counter-clockwise.
+Num Any digits at the end are additional rotation in tenths of a degree.
+
+The <flags> field is any of the following letters, sorted alphabetically, followed by a numeric part:
+
+"A" if the node instance is hard-to-select.
+"L" if the node instance is locked.
+"V" if the node instance is visible only inside the cell.
+Num Any digits at the end are the technology-specific bits."""
+
+    def __init__(self, *args, **kwargs):
+        super.__init__(*args, **kwargs)
+        self.
     def proc_line(self):
         # err_str: str = ''
         if isinstance(self.container, ElecCell):
             cell: ElecCell = self.container
-            cell.node.append(self)
+            cell.nodes.append(self)
 
 @elec_add_line_Parser("I")
 class ElecLineI_nstance(ElecLine):
@@ -123,7 +167,7 @@ class ElecLineI_nstance(ElecLine):
         # err_str: str = ''
         if isinstance(self.container, ElecCell):
             cell: ElecCell = self.container
-            cell.nodes.append(self)
+            cell.inst.append(self)
 
 @elec_add_line_Parser("A")
 class ElecLineA_rc(ElecLine):
