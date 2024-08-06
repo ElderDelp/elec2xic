@@ -10,7 +10,7 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Aug  4, 2024  6:42 pm by Gary Delp v-0.1.18)
+#  (Last Emacs Update:  Mon Aug  5, 2024  8:55 pm by Gary Delp v-0.1.20)
 #
 # Sun Aug  4, 2024  6:42 pm by Gary Delp v-0.1.18:
 #
@@ -40,7 +40,6 @@ __all__: list[Any] = [
     ElecCellLayout, ElecCellSchematic, ElecCellIcon, ElecCellDocumentation,
     ElecCellUnknown, ElecLineC_ell, ElecLineN_ode, ElecLineI_nstance,
     ElecLineA_rc, ElecLineE_xport,
-
 ]
 # --------------------------------------------------------------------
 # __init__.py ends here.

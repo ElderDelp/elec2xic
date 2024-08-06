@@ -11,7 +11,7 @@
 
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Sun Aug  4, 2024  5:54 pm by Gary Delp v-0.1.58)
+#  (Last Emacs Update:  Mon Aug  5, 2024  8:55 pm by Gary Delp v-0.1.60)
 #
 # Sun Aug  4, 2024  5:54 pm by Gary Delp v-0.1.58:
 #
@@ -29,7 +29,7 @@ from typing import Final
 from __init__ import (
     ElecBase, Parms, ElecLine, Location,
     ElecCell,
-    ElecCellLayout, ElecCellSchematic, ElecCellIcon
+    ElecCellLayout, ElecCellDocumentation, ElecCellSchematic, ElecCellIcon
 )
 import pprint
 
