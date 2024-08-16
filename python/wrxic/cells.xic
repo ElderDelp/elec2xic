@@ -1,0 +1,19 @@
+(Symbol symbol_name);
+(RCS_ID);
+(PHYSICAL);
+(RESOLUTION 1000);
+9 symbol_name;
+DS 0 1 1;
+
+DF;
+E
+
+(Symbol M3-M4-Con);
+(RCS_ID);
+(PHYSICAL);
+(RESOLUTION 1000);
+9 M3-M4-Con;
+DS 0 1 1;
+
+DF;
+E
