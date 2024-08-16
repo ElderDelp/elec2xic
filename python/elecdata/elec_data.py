@@ -10,7 +10,9 @@
 Classes for holding the various electric objects and their properties,
 """
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Mon Aug  5, 2024  8:54 pm by Gary Delp v-0.1.22)
+#  (Last Emacs Update:  Wed Aug  7, 2024  7:09 pm by Gary Delp v-0.1.22)
+#
+# Wed Aug  7, 2024  7:09 pm by Gary Delp v-0.1.22:
 #
 # Mon Aug  5, 2024  8:54 pm by Gary Delp v-0.1.22:
 #
@@ -110,6 +112,7 @@ class ElecLineC_ell(ElecLine):
             jel.tools_d['elist[0]'] = plist
 
 @elec_add_line_Parser("N")
+@elec_add_line_Parser("I")
 class ElecLineN_ode(ElecLine):
     """Inside of a cell definition, node instances are declared with
     the "N" and "I" lines. "N" is for primitive nodes and "I" is for
@@ -153,21 +156,15 @@ Num Any digits at the end are the technology-specific bits."""
 
     def __init__(self, *args, **kwargs):
         super.__init__(*args, **kwargs)
-        self.
+        self.center = 0
+        self.xform = 0
+
     def proc_line(self):
         # err_str: str = ''
         if isinstance(self.container, ElecCell):
             cell: ElecCell = self.container
             cell.nodes.append(self)
 
-@elec_add_line_Parser("I")
-class ElecLineI_nstance(ElecLine):
-
-    def proc_line(self):
-        # err_str: str = ''
-        if isinstance(self.container, ElecCell):
-            cell: ElecCell = self.container
-            cell.inst.append(self)
 
 @elec_add_line_Parser("A")
 class ElecLineA_rc(ElecLine):
