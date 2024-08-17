@@ -11,7 +11,9 @@
 """
 
 # --------------------------------------------------------------------
-#  (Last Emacs Update:  Thu Aug 15, 2024 11:21 pm by Gary Delp v-0.1.10)
+#  (Last Emacs Update:  Sat Aug 17, 2024 12:49 am by Gary Delp v-0.1.12)
+#
+# Sat Aug 17, 2024 12:03 am by Gary Delp v-0.1.10:
 #
 # Thu Aug 15, 2024 11:12 pm by Gary Delp v-0.1.6:
 #
@@ -20,7 +22,7 @@
 # Always start with all of the imports
 # Here is the start of: WRXIC/test_wr_shapes.py
 import unittest
-from __init__ import WrLayout
+from __init__ import WrLayout, LBox
 
 class TestWrShapes(unittest.TestCase):
     """Collect the WrShapes unit tests.
@@ -92,7 +94,9 @@ E
         sstr = '4.3.13 LinuxUbuntu22 x86_64 08/16/2024 02:58 GMT'
         tsstr = 'CREATED 8/16/2024 2:58:24, MODIFIED 8/16/2024 2:58:24'
         wl = WrLayout(sstr, tsstr)
-        resp = wl.write_con(["M3", 6], ["I3", 3], ["M4", 6])
+        self.assertEqual(wl.verss, sstr)
+        self.assertEqual(wl.tm_str, tsstr)
+        resp = wl.write_con(LBox("M3", 6), LBox("I3", 3), LBox("M4", 6))
         self.assertMultiLineEqual(resp, ref)
 
 
